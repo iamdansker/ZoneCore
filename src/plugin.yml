@@ -1,0 +1,12 @@
+name: ZoneCore
+version: 1.0
+author: iamdansker
+main: info.jeppes.ZoneCore.ZoneCorePlugin
+load: STARTUP
+website: http://www.jeppes.info
+#Commands are registrered by the plugin itself dynamically to make it easier to
+#add commands and for other developers to add commands
+
+#Plugins developed for the ZoneCore should have this in it's plugin.yml file
+
+#depend: [ZoneCore]
