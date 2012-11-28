@@ -29,7 +29,8 @@ public class ZoneConfig extends YamlConfiguration{
         this.file = file;
         if(!file.exists()){
             try {
-                new File(file.getPath()).mkdirs();
+                
+//                new File(file.getPath()).mkdirs();
                 file.createNewFile();
             } catch (IOException ex) {
                 Logger.getLogger(ZoneConfig.class.getName()).log(Level.SEVERE, null, ex);

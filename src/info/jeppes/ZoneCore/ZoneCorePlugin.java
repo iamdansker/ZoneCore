@@ -129,8 +129,9 @@ public class ZoneCorePlugin extends ZonePlugin{
         } else if (aFile.isDirectory()) {
             File[] listOfFiles = aFile.listFiles();
             if(listOfFiles!=null) {
-            for (File file : listOfFiles)
-                files = getFilesFromDirectoryAndSubDirectories(file,files,startPath + "." + file.getName());
+                for (File file : listOfFiles) {
+                    files = getFilesFromDirectoryAndSubDirectories(file,files,startPath + "." + file.getName());
+                }
             } else {
                 Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, "FILE ACCESS DENIED");
             }
