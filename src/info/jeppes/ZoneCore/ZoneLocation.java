@@ -54,7 +54,7 @@ public class ZoneLocation extends Location{
     }
     
     public ZoneWorld getZoneWorld(){
-        if(ZoneCore.isZoneWorldRunning()){
+        if(ZoneCore.isZonePluginRunning("ZoneWorld")){
             return ZoneWorldAPI.getWorld(worldName);
         }
         return null;
