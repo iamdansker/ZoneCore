@@ -10,12 +10,14 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  *
@@ -39,7 +41,7 @@ public class ZoneUserManager implements Listener{
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(ZoneCore.getCorePlugin(), new Runnable(){
             @Override
             public void run() {
-                getUsersConfig().save();
+                getUsersConfig().schedualSave();
             }
         }, saveInterval, saveInterval);
     }
@@ -58,32 +60,55 @@ public class ZoneUserManager implements Listener{
     public void onPlayerJoin(PlayerJoinEvent event){
         if(newUser(event.getPlayer())){
             
+        } else {
+            
         }
-        ZoneUser user = ZoneCore.getCorePlugin().getAPI().getUser(event.getPlayer());
+        ZoneUser user = ZoneCore.getUser(event.getPlayer());
         user.onPlayerJoin(event);
+    }
+    
+    @EventHandler(priority=EventPriority.NORMAL)
+    public void onPlayerQuit(PlayerQuitEvent event){
+        Location location = event.getPlayer().getLocation();
+        ZoneUser user = ZoneCore.getUser(event.getPlayer());
+        if(user != null){
+            ConfigurationSection config = user.getConfig();
+            config.set("lastleft", System.currentTimeMillis());
+            config.set("lastlocation.world", location.getWorld().getName());
+            config.set("lastlocation.x", location.getX());
+            config.set("lastlocation.y", location.getY());
+            config.set("lastlocation.z", location.getZ());
+            user.updatePlayTime();
+            user.saveConfig();
+        }
     }
     public static ZoneConfig getUsersConfig(){
         return usersConfig;
     }
     
     public final void loadUsers(ZoneConfig usersConfig){
-        ZoneCore.getCorePlugin().getLogger().log(Level.INFO,"Loading gates...");
+        if(ZoneCore.getCorePlugin().inDebugMode()) {
+            ZoneCore.getCorePlugin().getLogger().log(Level.INFO,"Loading users...");
+        }
         Set<String> keys = usersConfig.getKeys(false);
         for(String userName : keys){
             ConfigurationSection configurationSection = usersConfig.getConfigurationSection(userName);
             ZoneUserData user = new ZoneUserData(userName,configurationSection);
             users.put(userName.toLowerCase(), user);
         }
-        ZoneCore.getCorePlugin().getLogger().log(Level.INFO,"Loaded users");
+        if(ZoneCore.getCorePlugin().inDebugMode()) {
+            ZoneCore.getCorePlugin().getLogger().log(Level.INFO,"Loaded users");
+        }
     }
     
     public static boolean newUser(Player player) {
         if(!users.containsKey(player.getName().toLowerCase())){
-            ConfigurationSection configurationSection = usersConfig.getConfigurationSection(player.getName());
-            ZoneUserData newUser = new ZoneUserData(player,configurationSection);
+            ZoneUserData newUser = new ZoneUserData(player,null);
             users.put(newUser.getName().toLowerCase(), newUser);
-            getUsersConfig().save();
-            System.out.println("New ZoneUser: "+player.getName());
+            getUsersConfig().schedualSave();
+            if(ZoneCore.getCorePlugin().inDebugMode()) {
+                System.out.println("New ZoneUser: "+player.getName());
+            }
             return true;
         }
         return false;

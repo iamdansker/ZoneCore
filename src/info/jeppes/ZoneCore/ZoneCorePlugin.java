@@ -4,10 +4,12 @@
  */
 package info.jeppes.ZoneCore;
 
+import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Commands.ZoneCommand;
-import info.jeppes.ZoneCore.Listeners.PlayerListener;
 import info.jeppes.ZoneCore.Users.ZoneUserManager;
 import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -16,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  *
@@ -32,6 +35,32 @@ public class ZoneCorePlugin extends ZonePlugin{
 
     @Override
     public void loadDefaultConfig(ZoneConfig config) {
+        AsynchroizedStorageManager asynchroizedStorageManager = new AsynchroizedStorageManager();
+        this.addSchedueledBukkitTask(Bukkit.getScheduler().runTaskTimerAsynchronously(this, asynchroizedStorageManager,5,5));
+        
+        
+        ZoneCore.addConfigDefault(config);
+        InputStream defConfigStream = getResource("default-plugin-config.yml");
+        if (defConfigStream != null) {
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+            ZoneCore.addConfigDefault(defConfig);
+        }
+        
+        Class[] classesInPackage = getClassesInPackage(ZoneCore.getDefaultCommandsPackageDirectory(),null);
+        for(Class commandClass : classesInPackage){
+            if(DefaultCommand.class.isAssignableFrom(commandClass)){
+                try {
+                    try {
+                        DefaultCommand defaultCommand = (DefaultCommand)commandClass.getConstructor(ZonePlugin.class).newInstance(this);
+                        ZoneCore.addDefaultCommand(defaultCommand);
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        Logger.getLogger(ZoneCorePlugin.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } catch (NoSuchMethodException | SecurityException ex) {
+                    Logger.getLogger(ZoneCorePlugin.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     @Override
@@ -64,12 +93,12 @@ public class ZoneCorePlugin extends ZonePlugin{
     public void onEnable(){
         super.onEnable();
         loadCommandsFromPluginDirectory();
-        PlayerListener playerListener = new PlayerListener();
-        this.getServer().getPluginManager().registerEvents(playerListener, this);
     }
     
     @Override
     public void onDisable() {
+        AsynchroizedStorageManager.stop();
+        AsynchroizedStorageManager.save();
         ZoneUserManager.getUsersConfig().save();
         ZoneUserManager.getUsers().clear();
         super.onDisable();
@@ -137,5 +166,9 @@ public class ZoneCorePlugin extends ZonePlugin{
             }
         }
         return files;
+    }
+
+    public void addScedualedConfigSave(ZoneConfig config) {
+        
     }
 }

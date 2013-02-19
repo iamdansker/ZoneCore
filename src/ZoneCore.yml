@@ -1,1 +1,4 @@
-enabled: true
+#If enabled, the command manager will try and inject the commands into bukkit.
+#This is no longer used, but is still functional, but some server administation
+#managers will not work with it enabled (Multicraft will crash every 10 seconds and possibly others)
+injectCommands: false

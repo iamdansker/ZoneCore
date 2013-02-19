@@ -8,7 +8,7 @@ import info.jeppes.ZoneWorld.ZoneWorld;
 import info.jeppes.ZoneWorld.ZoneWorldAPI;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
 import org.bukkit.util.Vector;
 
 /**
@@ -48,7 +48,6 @@ public class ZoneLocation extends Location{
                 setWorld(world);
                 return craftWorld;
             }
-            return null;
         }
         return world;
     }
@@ -102,7 +101,46 @@ public class ZoneLocation extends Location{
         return this;
     }
     
+    public String toSaveString(){
+        return toSaveString(this);
+    }
     
+    public static String toSaveString(Location location){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(location.getWorld().getName()).append(":");
+        stringBuilder.append(location.getX()).append(":");
+        stringBuilder.append(location.getY()).append(":");
+        stringBuilder.append(location.getZ()).append(":");
+        stringBuilder.append(location.getYaw()).append(":");
+        stringBuilder.append(location.getPitch());
+        
+        return stringBuilder.toString();
+    }
+    public static String toSaveString(ZoneLocation location){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(location.getWorldName()).append(":");
+        stringBuilder.append(location.getX()).append(":");
+        stringBuilder.append(location.getY()).append(":");
+        stringBuilder.append(location.getZ()).append(":");
+        stringBuilder.append(location.getYaw()).append(":");
+        stringBuilder.append(location.getPitch());
+        
+        return stringBuilder.toString();
+    }
+    
+    public static ZoneLocation toLoationFromSaveString(String string){
+        String[] zoneLocationInfoList = string.split(":");
+        String worldName = zoneLocationInfoList[0];
+        double x = Double.parseDouble(zoneLocationInfoList[1]);
+        double y = Double.parseDouble(zoneLocationInfoList[2]);
+        double z = Double.parseDouble(zoneLocationInfoList[3]);
+        float yaw = Float.parseFloat(zoneLocationInfoList[4]);
+        float pitch = Float.parseFloat(zoneLocationInfoList[5]);
+        ZoneLocation zoneLocation = new ZoneLocation(worldName,x,y,z);
+        zoneLocation.setYaw(yaw);
+        zoneLocation.setPitch(pitch);
+        return zoneLocation;
+    }
     
     public String getSimpleInfo() {
         return  getWorldName() +

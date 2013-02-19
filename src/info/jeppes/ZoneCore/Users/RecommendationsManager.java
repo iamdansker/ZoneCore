@@ -4,7 +4,6 @@
  */
 package info.jeppes.ZoneCore.Users;
 
-import com.herocraftonline.dthielke.herochat.HeroChat;
 import info.jeppes.ZoneCore.Users.ZoneUserData.ServerGroup;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.text.DateFormat;
@@ -72,7 +71,7 @@ public class RecommendationsManager {
         for(ZoneUser user : ZoneCore.getUsers().values()){
             user.getRecommendationsHolder().newseason(voteseason, oldseason);
         }
-        ZoneUserManager.getUsersConfig().save();
+        ZoneUserManager.getUsersConfig().schedualSave();
         Player[] onlinePlayers = Bukkit.getOnlinePlayers();
         for(Player player : onlinePlayers){
             player.sendMessage(ChatColor.GREEN+"A new vote season has started! Expect the top voters to be announced on the website soon!");
@@ -93,22 +92,32 @@ public class RecommendationsManager {
                 return 0;
             case Regular:
                 return 1;
-            case MovieMaker:
-                return 1;
             case VIP:
                 return 2;
             case Donator:
                 return 3;
             case Mod:
                 return 5;
-            case ModP:
+            case SuperModArcane:
+                return 6;
+            case SuperModPremium:
+                return 5;
+            case SuperModArchitect:
+                return 5;
+            case SuperModElite:
+                return 5;
+            case SuperModSponsor:
                 return 5;
             case Sponsor:
                 return 4;
-            case SponsorPlus:
+            case Elite:
                 return 4;
-            case SuperMod:
+            case Architect:
                 return 5;
+            case Premium:
+                return 5;
+            case Arcane:
+                return 6;
             case Admin:
                 return 6;
             case Owner:

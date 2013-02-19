@@ -19,9 +19,11 @@ import org.bukkit.entity.Player;
 public abstract class CommandData implements ZoneCommand{
     private final String commandName;
     private boolean showInHelp = true;
+    private boolean playerOnlineCommand = false;
     private final String[] commandAliases;
     private final String[] subCommandAliases;
     private final ZonePlugin plugin;
+    private HashMap<String,Boolean> isPrimaryCommand = new HashMap<>();
     private HashMap<String,Boolean> isHelpCommand = new HashMap<>();
     
     public CommandData(String commandName, ZonePlugin plugin){
@@ -55,7 +57,7 @@ public abstract class CommandData implements ZoneCommand{
     
     @Override
     public boolean onCommand(CommandSender cs, org.bukkit.command.Command cmnd, String string, String[] args) {
-        if(!canRun(cs)){
+        if(!canRun(cs,args)){
             logCommand(args, cs, false);
             noPermissions(cs);
             return false;
@@ -66,11 +68,47 @@ public abstract class CommandData implements ZoneCommand{
         return true;
     }
     
-    
- 
+//    @Override
+//    @Deprecated
+//    public boolean canRun(CommandSender cs){
+//        return ZoneCore.hasPermission(cs , plugin.getName() + "." + commandName);
+//    }
     @Override
-    public boolean canRun(CommandSender cs){
+    public boolean canRun(CommandSender cs, String[] args){
+        if(this.isPlayerOnlineCommand()){
+            if(!(cs instanceof Player)){
+                return false;
+            }
+        }
+        return hasPermission(cs,args);
+    }
+    @Override
+    public boolean hasSimplePermission(CommandSender cs){
         return ZoneCore.hasPermission(cs , plugin.getName() + "." + commandName);
+    }
+    @Override
+    public boolean hasPermission(CommandSender cs, String[] args){
+        return hasSimplePermission(cs);
+    }
+
+    @Override
+    public boolean isPlayerOnlineCommand() {
+        return playerOnlineCommand;
+    }
+    @Override
+    public void setPlayerOnlineCommand(boolean playerOnlineCommand) {
+        this.playerOnlineCommand = playerOnlineCommand;
+    }
+    
+    @Override
+    public Player toPlayerObject(CommandSender cs){
+        if(this.isPlayerOnlineCommand()){
+            return (Player)cs;
+        }
+        if(cs instanceof Player){
+            return (Player)cs;
+        }
+        return null;
     }
     
     @Override
@@ -83,17 +121,34 @@ public abstract class CommandData implements ZoneCommand{
     }
 
     @Override
-    public boolean isHelpCommand(String alias){
-        return isHelpCommand.containsKey(alias) ? isHelpCommand.get(alias) : false ;
+    public boolean isPrimaryCommand(String alias){
+        return isPrimaryCommand.containsKey(alias) ? isPrimaryCommand.get(alias) : false ;
     }
     @Override
-    public void setIsHelpCommand(boolean isHelpCommand){
+    public void setIsPrimaryCommand(boolean isPrimaryCommand){
         for(String alias : this.getAliases()){
-            this.isHelpCommand.put(alias, isHelpCommand);
+            setIsPrimaryCommand(isPrimaryCommand, alias);
         }
     }
     @Override
-    public void setIsHelpCommand(boolean isHelpCommand, String alias){
+    public void setIsPrimaryCommand(boolean isPrimaryCommand, String alias){
+        this.isPrimaryCommand.put(alias, isPrimaryCommand);
+    }
+    
+    @Override
+    public boolean isHelpCommand(String alias) {
+        return isHelpCommand.containsKey(alias) ? isHelpCommand.get(alias) : false ;
+    }
+
+    @Override
+    public void setIsHelpCommand(boolean isHelpCommand) {
+        for(String alias : this.getAliases()){
+            setIsHelpCommand(isHelpCommand, alias);
+        }
+    }
+
+    @Override
+    public void setIsHelpCommand(boolean isHelpCommand, String alias) {
         this.isHelpCommand.put(alias, isHelpCommand);
     }
     
@@ -135,8 +190,13 @@ public abstract class CommandData implements ZoneCommand{
 
     }
     
+    @Override
     public String getCommandName(){
         return commandName;
+    }
+    @Override
+    public String getName(){
+        return getCommandName();
     }
     
     ////////////
@@ -155,6 +215,11 @@ public abstract class CommandData implements ZoneCommand{
     //////////////
     //exceptions//
     //////////////
+    
+    @Override
+    public void playerOnlyCommandException(CommandSender cs){
+        sendErrorMessage(cs,"This command can only be used by players");
+    }
     
     @Override
     public void noPermissions(CommandSender cs){

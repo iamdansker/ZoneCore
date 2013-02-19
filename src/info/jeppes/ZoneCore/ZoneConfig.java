@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -20,13 +19,17 @@ import org.bukkit.plugin.Plugin;
  *
  * @author Jeppe
  */
-public class ZoneConfig extends YamlConfiguration{
+public class ZoneConfig extends AsynchronizedYamlConfiguration{
     private final Plugin plugin;
     private File file;
-    private String fileName;
+    private String name;
     public ZoneConfig(Plugin plugin, File file){
+        this(plugin,file,true);
+    }
+    public ZoneConfig(Plugin plugin, File file, boolean loadDefaults){
         this.plugin = plugin;
         this.file = file;
+        this.name = file.getName();
         if(!file.exists()){
             try {
                 
@@ -36,7 +39,6 @@ public class ZoneConfig extends YamlConfiguration{
                 Logger.getLogger(ZoneConfig.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        fileName = file.getName();
         try {
             load(file);
         } catch (FileNotFoundException ex) {
@@ -44,26 +46,39 @@ public class ZoneConfig extends YamlConfiguration{
         } catch (IOException | InvalidConfigurationException ex) {
             Logger.getLogger(ZoneConfig.class.getName()).log(Level.SEVERE, null, ex);
         }
-        loadDefaults(plugin);
+        if(loadDefaults){
+            loadDefaults(plugin);
+        }
     }
     
+    public String getFileName(){
+        return name;
+    }
+    
+    @Override
+    public String getName(){
+        return getFileName();
+    }
     public final boolean loadDefaults(Plugin plugin){
+        return this.loadDefaults(plugin, file.getName());
+    }
+    public final boolean loadDefaults(Plugin plugin, String fileName){
         if(plugin == null){
             return false;
         }
-        InputStream defConfigStream = plugin.getResource(file.getName());
+        InputStream defConfigStream = plugin.getResource(fileName);
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-            setDefaults(defConfig);
-            options().copyDefaults(true);
-            save();
+            loadDefaults(plugin,defConfig);
             return true;
         }
         return false;
     }
-    
-    public String getFileName(){
-        return fileName;
+    public final boolean loadDefaults(Plugin plugin, YamlConfiguration config){
+        setDefaults(config);
+        options().copyDefaults(true);
+        schedualSave();
+        return true;
     }
     
     public void writeYML(String root, Object x){
@@ -122,6 +137,8 @@ public class ZoneConfig extends YamlConfiguration{
 
         });
     }
+    
+    @Override
     public boolean save(){
         try {
             save(file);

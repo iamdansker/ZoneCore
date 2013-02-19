@@ -4,7 +4,6 @@
  */
 package info.jeppes.ZoneCore.Commands;
 
-import info.jeppes.ZoneCore.ZoneCore;
 import java.util.ArrayList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,9 +13,10 @@ import org.bukkit.command.CommandSender;
  *
  * @author Jeppe
  */
-public class SubCommandManager extends Command{
+public class SubCommandManager extends Command implements CommandExecutor{
 
     private ArrayList<ZoneCommand> commands = new ArrayList<>();
+    private ZoneCommand primaryCommand = null;
     private ZoneCommand helpCommand = null;
     
     public SubCommandManager(String alias){
@@ -25,16 +25,24 @@ public class SubCommandManager extends Command{
     }
     
     @Override
+    public boolean onCommand(CommandSender cs, Command cmnd, String commandName, String[] args) {
+        execute(cs,commandName,args);
+        return true;
+    }
+    
+    @Override
     public boolean execute(CommandSender cs, String commandName, String[] args) {
         String[] commandArgs = new String[args.length+1];
         commandArgs[0] = commandName;
         System.arraycopy(args, 0, commandArgs, 1, args.length);
-        if(args.length >= 1){
-            ZoneCommand zoneCommand = getCommand(args[0]);
+        if(commandArgs.length > 1){
+            ZoneCommand zoneCommand = getCommand(commandArgs[1]);
             if(zoneCommand != null){
                 zoneCommand.onCommand(cs, this, commandName, commandArgs);
             } else {
-                if(helpCommand != null){
+                if(primaryCommand != null){
+                    primaryCommand.onCommand(cs, this, commandName, commandArgs);
+                } else if(helpCommand != null){
                     helpCommand.onCommand(cs, this, commandName, commandArgs);
                 }
             }
@@ -44,7 +52,9 @@ public class SubCommandManager extends Command{
                     command.onCommand(cs, this, commandName, commandArgs);
                 }
             }
-            if(helpCommand != null){
+            if(primaryCommand != null){
+                primaryCommand.onCommand(cs, this, commandName, commandArgs);
+            } else if(helpCommand != null){
                 helpCommand.onCommand(cs, this, commandName, commandArgs);
             }
         }
@@ -67,19 +77,26 @@ public class SubCommandManager extends Command{
         return alternativeCommand;
     }
     
-    public void addCommand(ZoneCommand command) {
+    public ArrayList<ZoneCommand> getCommands(){
+        return commands;
+    }
+    
+    public boolean addCommand(ZoneCommand command) {
         if(commands.contains(command)){
-            return;
+            return false;
         }
         commands.add(command);
-        if(command.isHelpCommand(this.getName())){
+        if(command.isPrimaryCommand(this.getName())){
+            primaryCommand = command;
+        } else if(command.isHelpCommand(this.getName())){
             helpCommand = command;
         }
+        return true;
     }
     public void removeCommand(ZoneCommand command) {
         commands.remove(command);
-        if(helpCommand.equals(command)) {
-            helpCommand = null;
+        if(primaryCommand.equals(command)) {
+            primaryCommand = null;
         }
     }
 }

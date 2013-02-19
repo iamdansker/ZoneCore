@@ -13,6 +13,7 @@ import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
@@ -32,12 +33,12 @@ import org.bukkit.util.Vector;
  *
  * @author Jeppe
  */
-public abstract class BukkitUser implements ZoneUser{
+public abstract class BukkitPlayerWrapper implements ZoneUser{
 
     private Player player;
     private final String name;
 
-    public BukkitUser(Player player,String name){
+    public BukkitPlayerWrapper(Player player,String name){
         this.player = player;
         this.name = name;
     }
@@ -995,5 +996,49 @@ public abstract class BukkitUser implements ZoneUser{
     @Override
     public Inventory getEnderChest() {
         return player.getEnderChest();
+    }
+    @Override
+    public void setTexturePack(String string) {
+        player.setTexturePack(string);
+    }
+
+    @Override
+    public boolean getRemoveWhenFarAway() {
+        return player.getRemoveWhenFarAway();
+    }
+
+    @Override
+    public void setRemoveWhenFarAway(boolean bln) {
+        player.setRemoveWhenFarAway(bln);
+    }
+
+    @Override
+    public EntityEquipment getEquipment() {
+        return player.getEquipment();
+    }
+
+    @Override
+    public void setCanPickupItems(boolean bln) {
+        player.setCanPickupItems(bln);
+    }
+
+    @Override
+    public boolean getCanPickupItems() {
+        return player.getCanPickupItems();
+    }
+
+    @Override
+    public Location getLocation(Location lctn) {
+        return player.getLocation(lctn);
+    }
+
+    @Override
+    public void setMaxHealth(int i) {
+        player.setMaxHealth(i);
+    }
+
+    @Override
+    public void resetMaxHealth() {
+        player.resetMaxHealth();
     }
 }

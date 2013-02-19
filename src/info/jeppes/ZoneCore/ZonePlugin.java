@@ -4,9 +4,9 @@
  */
 package info.jeppes.ZoneCore;
 
+import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Commands.ZoneCommand;
 import info.jeppes.ZoneCore.Commands.ZoneCommandManager;
-import info.jeppes.ZoneGate.ZoneGateAPI;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,9 +20,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  *
@@ -31,33 +34,54 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class ZonePlugin extends JavaPlugin{
     private ZoneCore zoneCore = null;
     private Object API = null;
-    private boolean showLoadMessages = true;
     private boolean enabled = true;
+    private boolean debugMode = false;
     
     private ZoneConfig pluginConfig = null;
     private ArrayList<ZoneConfig> configs = new ArrayList<>();
     private String[] pluginCommandAliases = null;
     private ZoneCommandManager commandManager = null;
     private ArrayList<Integer> schedueledTaskIds = new ArrayList<>();
+    private ArrayList<BukkitTask> schedueledBukkitTask = new ArrayList<>();
     
 
     @Override
     public void onLoad() {
         super.onLoad();
+        
+        //initialize ZoneCore instance specific for the plugin
         zoneCore = new ZoneCore(this);
+        
+        //initialize API
         initAPI();
+        
+        //Init default plugin command aliases
+        pluginCommandAliases = initCommandAliases();
+        if(pluginCommandAliases == null){
+            pluginCommandAliases = new String[]{this.getName()};
+        }
+        
+        //load the default plugin config
         preLoadDefaultConfig();
     }
     
     @Override
     public void onEnable() {
+        if(!enabled){
+            ZoneCore.removeZonePlugin(this);
+            return;
+        }
         boolean zonePluginRunning = ZoneCore.isZonePluginRunning(this.getName());
         if(!zonePluginRunning){
             ZoneCore.addZonePlugin(this);
         }
         
+        //Init command listener
+        initCommands();
         //Loading config files
-        getLogger().log(Level.INFO, "Loading config files...");
+        if(ZoneCore.getCorePlugin().inDebugMode() || inDebugMode()) {
+            getLogger().log(Level.INFO, "Loading config files...");
+        }
         String[] configFilesToLoad = preLoadConfig();
         if(configFilesToLoad != null){
             for(int i = 0; i < configFilesToLoad.length ; i++){
@@ -67,12 +91,10 @@ public abstract class ZonePlugin extends JavaPlugin{
                 loadConfig(zoneConfig);
             }
         }
-        getLogger().log(Level.INFO, "Loaded config files!");
+        if(ZoneCore.getCorePlugin().inDebugMode() || inDebugMode()) {
+            getLogger().log(Level.INFO, "Loaded config files!");
+        }
         
-        //Init default plugin command aliases
-        pluginCommandAliases = initCommandAliases();
-        //Init command listener
-        initCommands();
         getLogger().log(Level.INFO, "Enabled !");
     }
 
@@ -83,6 +105,9 @@ public abstract class ZonePlugin extends JavaPlugin{
         for(int id : getSchedueledTaskIds()){
             Bukkit.getScheduler().cancelTask(id);
         }
+        for(BukkitTask task : schedueledBukkitTask){
+            task.cancel();
+        }
         super.onDisable();
     }
     
@@ -90,6 +115,10 @@ public abstract class ZonePlugin extends JavaPlugin{
         String pluginConfigDirecotry = ZoneCore.getMainPluginDirectory()+File.separator+getName()+".yml";
         File pluginConfigFile = new File(pluginConfigDirecotry);
         pluginConfig = new ZoneConfig(this,pluginConfigFile);
+        ArrayList<YamlConfiguration> configDefaults = ZoneCore.getConfigDefaults();
+        for(YamlConfiguration defConfig : configDefaults){
+            pluginConfig.loadDefaults(this, defConfig);
+        }
         loadDefaultConfigSettings(pluginConfig);
         loadDefaultConfig(pluginConfig);
         return true;
@@ -101,7 +130,12 @@ public abstract class ZonePlugin extends JavaPlugin{
                 getLogger().log(Level.INFO, "Disabling "+getName()+", enable set to false in config");
                 getServer().getPluginManager().disablePlugin(this);
             }
-            showLoadMessages = config.getBoolean("show-load-messages");
+        }
+        if(config.contains("debug")){
+            debugMode = config.getBoolean("debug");
+            if(debugMode){
+                getLogger().log(Level.INFO, "Debug mode enabled");
+            }
         }
     }
     
@@ -128,6 +162,11 @@ public abstract class ZonePlugin extends JavaPlugin{
     public Object getObjectAPI(){
         return API;
     }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        return super.onCommand(sender, command, label, args);
+    }
     
     public String[] getCommandAliases(){
         return pluginCommandAliases;
@@ -135,16 +174,25 @@ public abstract class ZonePlugin extends JavaPlugin{
     
     public void reloadPlugin(final CommandSender cs){
         final ZonePlugin instance = this;
-        new Thread(new Runnable(){
+        final File file = this.getFile();
+        Bukkit.getScheduler().runTask(this, new Runnable(){
             @Override
             public void run() {
                 sendMessage(cs,"Reloading "+getName()+" Version "+getDescription().getVersion()+"...");
                 PluginManager pluginManager = getServer().getPluginManager();
                 pluginManager.disablePlugin(instance);
                 pluginManager.enablePlugin(instance);
+//                try {
+//                    Plugin loadPlugin = pluginManager.loadPlugin(file);
+//                    loadPlugin.onLoad();
+//                    pluginManager.enablePlugin(loadPlugin);
+//                } catch (InvalidPluginException | InvalidDescriptionException | UnknownDependencyException ex) {
+//                    Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, ex);
+//                    pluginManager.enablePlugin(instance);
+//                }
                 sendMessage(cs,"Reloaded "+getName()+" Version "+getDescription().getVersion()+"!");
             }
-        }).start();
+        });
     }
     
     public ZoneCore getZoneCore(){
@@ -165,6 +213,15 @@ public abstract class ZonePlugin extends JavaPlugin{
         }
         return null;
     }
+
+    public boolean inDebugMode() {
+        return debugMode;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+    
     public ZoneCommandManager getCommandManager(){
         return commandManager;
     }
@@ -173,6 +230,9 @@ public abstract class ZonePlugin extends JavaPlugin{
     }
     public void addSchedueledTaskId(int id){
         schedueledTaskIds.add(id);
+    }
+    public void addSchedueledBukkitTask(BukkitTask task){
+        schedueledBukkitTask.add(task);
     }
     
     public void sendMessage(CommandSender cs, String message){
@@ -186,26 +246,28 @@ public abstract class ZonePlugin extends JavaPlugin{
         commandManager = new ZoneCommandManager(this);
         //Load commands from plugin package
         Class[] classesInPackage = null;
-        //        classesInPackage = getClassesInPackage(ZoneCore.getDefaultCommandsPackageDirectory());
-        //        for(Class commandClass : classesInPackage){
-        //            try {
-        //                Object commandInstance = commandClass.newInstance();
-        //                if(commandInstance instanceof ZoneCommand){
-        //                    ZoneCommand zoneCommand = (ZoneCommand) commandInstance;
-        //                    commandManager.registreCommand(zoneCommand);
-        //                }
-        //            } catch (InstantiationException | IllegalAccessException ex) {
-        //                Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, ex);
-        //            }
-        //        }
+        for(DefaultCommand defaultCommand : ZoneCore.getDefaultCommands()){
+            commandManager.registreCommand(defaultCommand.clone(this));
+        }
+//                classesInPackage = getClassesInPackage(ZoneCore.getDefaultCommandsPackageDirectory());
+//                for(Class commandClass : classesInPackage){
+//                    try {
+//                        Object commandInstance = commandClass.newInstance();
+//                        if(commandInstance instanceof ZoneCommand){
+//                            ZoneCommand zoneCommand = (ZoneCommand) commandInstance;
+//                            commandManager.registreCommand(zoneCommand);
+//                        }
+//                    } catch (InstantiationException | IllegalAccessException ex) {
+//                        Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
         String initCommandPackageDirectory = initCommandPackageDirectory();
         if(initCommandPackageDirectory != null){
             classesInPackage = getClassesInPackage(initCommandPackageDirectory,null);
             for(Class commandClass : classesInPackage){
                 try {
-                    Object commandInstance = commandClass.newInstance();
-                    if(commandInstance instanceof ZoneCommand){
-                        ZoneCommand zoneCommand = (ZoneCommand) commandInstance;
+                    if(ZoneCommand.class.isAssignableFrom(commandClass)){
+                        ZoneCommand zoneCommand = (ZoneCommand) commandClass.newInstance();
                         commandManager.registreCommand(zoneCommand);
                     }
                 } catch (InstantiationException | IllegalAccessException ex) {
@@ -224,8 +286,9 @@ public abstract class ZonePlugin extends JavaPlugin{
 	 */
 	public Class[] getClassesInPackage(String packageName, String regexFilter) {
 		Pattern regex = null;
-		if (regexFilter != null)
-			regex = Pattern.compile(regexFilter);
+		if (regexFilter != null) {
+                    regex = Pattern.compile(regexFilter);
+                }
 
 		try {
 			ClassLoader classLoader = this.getClassLoader();
@@ -272,8 +335,9 @@ public abstract class ZonePlugin extends JavaPlugin{
                 while ((entry = zip.getNextEntry()) != null) {
                     if (entry.getName().endsWith(".class")) {
                         String className = entry.getName().replaceAll("[$].*", "").replaceAll("[.]class", "").replace('/', '.');
-                        if (className.startsWith(packageName) && (regex == null || regex.matcher(className).matches()))
+                        if (className.startsWith(packageName) && (regex == null || regex.matcher(className).matches())) {
                             classes.add(className);
+                        }
                     }
                 }
             }
@@ -288,8 +352,9 @@ public abstract class ZonePlugin extends JavaPlugin{
                     classes.addAll(findClasses(file.getAbsolutePath(), packageName + "." + file.getName(), regex));
                 } else if (file.getName().endsWith(".class")) {
                     String className = packageName + '.' + file.getName().substring(0, file.getName().length() - 6);
-                    if (regex == null || regex.matcher(className).matches())
-                            classes.add(className);
+                    if (regex == null || regex.matcher(className).matches()) {
+                        classes.add(className);
+                    }
                 }
             }
             return classes;

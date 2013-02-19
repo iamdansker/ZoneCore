@@ -4,43 +4,43 @@
  */
 package info.jeppes.ZoneCore.Users;
 
+import de.bananaco.bpermissions.api.CalculableType;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import ru.tehkode.permissions.PermissionGroup;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 /**
  *
  * @author Jeppe
  */
-public class ZoneUserData extends BukkitUser{
+public class ZoneUserData extends BukkitPlayerWrapper{
 
 
     public enum ServerGroup {
         Owner,
-        PvPAdmin,
         Admin,
-        SuperMod,
-        Sponsor,
-        SponsorPlus,
-        ModP,
+        SuperModArcane,
+        SuperModPremium,
+        SuperModArchitect,
+        SuperModElite,
+        SuperModSponsor,
         Mod,
+        Arcane,
+        Premium,
+        Architect,
+        Elite,
+        Sponsor,
         Donator,
         VIP,
-        MovieMaker,
         Regular,
         Basic;
         
@@ -48,10 +48,12 @@ public class ZoneUserData extends BukkitUser{
             switch(this){
                 case Owner: return true;
                 case Admin: return true;
-                case SuperMod: return true;
+                case SuperModArcane: return true;
+                case SuperModPremium: return true;
+                case SuperModArchitect: return true;
+                case SuperModElite: return true;
+                case SuperModSponsor: return true;
                 case Mod: return true;
-                case ModP: return true;
-                case PvPAdmin: return true;
                 default: return false;
             }
         }
@@ -76,12 +78,20 @@ public class ZoneUserData extends BukkitUser{
     }
 
     @Override
-    public ServerGroup getServerGroup(){
-        try{
-            PermissionGroup group = PermissionsEx.getUser(this.getName()).getGroups()[0];
-            return ServerGroup.valueOf(group.getName());
-        } catch(Exception e){}
+    public ServerGroup getServerGroup(World world){
+//        try{
+//            String[] groups = de.bananaco.bpermissions.api.ApiLayer.getGroups(null, CalculableType.USER, null);
+//            for(String groupName : groups){
+//                de.bananaco.bpermissions.api.ApiLayer.getValue(groupName, CalculableType.USER, groupName, groupName)
+//            }
+//            return ServerGroup.valueOf(group.getName());
+//        } catch(Exception e){}
         return null;
+    }
+    @Override
+    public ServerGroup getServerGroup(){
+        String[] groups = de.bananaco.bpermissions.api.ApiLayer.getGroups(null, CalculableType.USER, this.getName());
+        return ServerGroup.valueOf(groups[0]);
     }
     
     @Override
@@ -150,7 +160,7 @@ public class ZoneUserData extends BukkitUser{
 
     @Override
     public boolean sendMesssagesWhenOnline() {
-        if(isOnline()){
+        if(isOnline() && config.contains("onjoin.sendmessage")){
             Bukkit.getScheduler().scheduleSyncDelayedTask(ZoneCore.getCorePlugin(), new Runnable(){
                 @Override
                 public void run() {
@@ -172,7 +182,7 @@ public class ZoneUserData extends BukkitUser{
 
     @Override
     public boolean giveItemsWhenOnline() {
-        if(isOnline()){
+        if(isOnline() && config.contains("onjoin.giveitems")){
             ConfigurationSection configurationSection = getConfig().getConfigurationSection("onjoin.giveitems");
             if(configurationSection == null){
                 return true;
@@ -195,7 +205,7 @@ public class ZoneUserData extends BukkitUser{
 
     @Override
     public boolean giveLevelsWhenOnline() {
-        if(isOnline()){
+        if(isOnline() && config.contains("onjoin.givelevels")){
             int levels = getConfig().getInt("onjoin.givelevels");
             setAndSave("onjoin.givelevels", null);
             this.setLevel(getLevel()+levels);
@@ -248,10 +258,13 @@ public class ZoneUserData extends BukkitUser{
         this.sendMesssagesWhenOnline();
         this.giveItemsWhenOnline();
         this.giveLevelsWhenOnline();
+        config.set("lastjoined", System.currentTimeMillis());
+        config.set("playtimecheck",System.currentTimeMillis());
+        ZoneUserManager.getUsersConfig().schedualSave();
     }
     @Override
     public void saveConfig(){
-        this.getUsersConfig().save();
+        this.getUsersConfig().schedualSave();
     }
     
     @Override
@@ -261,7 +274,6 @@ public class ZoneUserData extends BukkitUser{
             getConfig().set("playtime", getPlayTime() + (System.currentTimeMillis() - lastPlayTimeChecked));
             getConfig().set("playtimecheck", System.currentTimeMillis());
         }
-        saveConfig();
     }
     @Override
     public long getPlayTime() {

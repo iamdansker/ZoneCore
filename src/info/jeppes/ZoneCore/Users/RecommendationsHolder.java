@@ -185,7 +185,7 @@ public class RecommendationsHolder {
     }
     
     public void save(){
-        this.user.getUsersConfig().save();
+        this.user.getUsersConfig().schedualSave();
     }
 
     public void newseason(String newseason, String oldseason) {

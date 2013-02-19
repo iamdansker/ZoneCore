@@ -12,5 +12,20 @@ public enum WorldTime {
     Sunrise,
     Day,
     Sunset,
-    Night
+    Night;
+
+    public long getTime(){
+        switch(this){
+            case Day: 
+                return 16000;
+            case Night: 
+                return 0;
+            case Sunrise:
+                return 12000;
+            case Sunset: 
+                return 220000;
+            default:
+                return 0;
+        }
+    }
 }

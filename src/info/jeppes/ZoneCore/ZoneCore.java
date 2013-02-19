@@ -4,6 +4,8 @@
  */
 package info.jeppes.ZoneCore;
 
+import info.jeppes.ZoneCore.Commands.DefaultCommand;
+import info.jeppes.ZoneCore.Commands.ZoneCommand;
 import info.jeppes.ZoneCore.Users.ZoneUser;
 import info.jeppes.ZoneCore.Users.ZoneUserManager;
 import java.io.File;
@@ -14,8 +16,8 @@ import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -27,6 +29,9 @@ public class ZoneCore extends ZoneAPI{
     private static String mainDirectory = "plugins"+File.separator+"ZoneCore";
     private static String defaultCommandsPackageDirectory = "info.jeppes.ZoneCore.Commands.DefaultCommands";
     private static ZoneCorePlugin corePlugin = null;
+    private static ArrayList<String> noneDefaultOpPermissions = new ArrayList();
+    private static ArrayList<YamlConfiguration> configDefaults = new ArrayList();
+    private static ArrayList<DefaultCommand> defaultCommands = new ArrayList();
     
     
     private final ZonePlugin plugin;
@@ -75,18 +80,66 @@ public class ZoneCore extends ZoneAPI{
         return defaultCommandsPackageDirectory;
     }
     
+    public static void addConfigDefault(YamlConfiguration config){
+        configDefaults.add(config);
+    }
+    public static void removeConfigDefault(YamlConfiguration config){
+        configDefaults.remove(config);
+    }
+    public static ArrayList<YamlConfiguration> getConfigDefaults(){
+        return configDefaults;
+    }
+    
+    public static void addDefaultCommand(DefaultCommand command){
+        defaultCommands.add(command);
+    }
+    public static void removeDefaultCommand(DefaultCommand command){
+        defaultCommands.remove(command);
+    }
+    public static ArrayList<DefaultCommand> getDefaultCommands(){
+        return defaultCommands;
+    }
+    
     public static boolean hasPermission(CommandSender cs, String permission){
-        if(cs.isOp()){
+        if(cs.isOp() && isDefaultOpPermission(permission)){
             return true;
         }
-        return cs.hasPermission(permission);
+        if(cs.hasPermission(permission + ".^")){
+            return false;
+        }
+        boolean hasPermission = cs.hasPermission(permission);
+        if(!hasPermission){
+            String[] permissionsSplit = permission.split(".");
+            StringBuilder tempPermission = new StringBuilder();
+            boolean first = true;
+            for(String permissionPart : permissionsSplit){
+                if(!first){
+                    tempPermission.append(".");
+                } else {
+                    first = false;
+                }
+                tempPermission.append(permissionPart);
+                System.out.println(tempPermission.toString() + ".*");
+                hasPermission = cs.hasPermission(tempPermission.toString() + ".*");
+                if(hasPermission){
+                    return true;
+                }
+            }
+        }
+        return hasPermission;
     }
     public static boolean hasPermission(Player player, String permission){
-
-        if(player.isOp()){
-            return true;
-        }
-        return player.hasPermission(permission);
+        return ZoneCore.hasPermission((CommandSender) player, permission);
+    }
+    
+    public static void addDefaultOpPermission(String permission){
+        noneDefaultOpPermissions.remove(permission);
+    } 
+    public static void removeDefaultOpPermission(String permission){
+        noneDefaultOpPermissions.add(permission);
+    } 
+    public static boolean isDefaultOpPermission(String permission){
+        return !noneDefaultOpPermissions.contains(permission);
     }
     
     public void sendMessage(CommandSender cs, String message){

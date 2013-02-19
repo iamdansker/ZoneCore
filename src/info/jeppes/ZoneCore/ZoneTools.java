@@ -4,13 +4,18 @@
  */
 package info.jeppes.ZoneCore;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 
 /**
@@ -203,8 +208,44 @@ public class ZoneTools {
         return 0;
     }
     
-    public boolean isPlayer(CommandSender cs){
+    public static boolean isPlayer(CommandSender cs){
         return (cs instanceof Player);
+    }
+    
+    public static ItemStack getInkItemStackFromColor(Color color){
+        return getInkItemStackFromDyeColor(DyeColor.getByColor(color));
+    }
+    public static ItemStack getInkItemStackFromFireworksColor(Color color){
+        return getInkItemStackFromDyeColor(DyeColor.getByFireworkColor(color));
+    }
+    public static ItemStack getInkItemStackFromDyeColor(DyeColor dyeColor){
+        for(byte b = 0; b < 16; b++){
+            if(dyeColor.equals(DyeColor.getByData(b))){
+                ItemStack itemStack = new ItemStack(Material.INK_SACK);
+                MaterialData data = itemStack.getData();
+                data.setData(b);
+                itemStack.setData(data);
+                return itemStack;
+            }
+        }
+        
+        return null;
+        
+    }
+    
+    
+    public static void deleteDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteDirectory(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        directory.delete();
     }
     
     public static int[] getTimeDDHHMMSS(long time) {     

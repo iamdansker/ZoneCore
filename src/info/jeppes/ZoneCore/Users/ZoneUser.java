@@ -5,8 +5,8 @@
 package info.jeppes.ZoneCore.Users;
 
 import info.jeppes.ZoneCore.ZoneConfig;
-import java.util.ArrayList;
 import java.util.HashMap;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -20,6 +20,7 @@ public interface ZoneUser extends Player{
     public void newUser();
     public ConfigurationSection getConfig();
     public ZoneConfig getUsersConfig();
+    public ZoneUserData.ServerGroup getServerGroup(World world);
     public ZoneUserData.ServerGroup getServerGroup();
     
     public HashMap<String,Object> getTempData();

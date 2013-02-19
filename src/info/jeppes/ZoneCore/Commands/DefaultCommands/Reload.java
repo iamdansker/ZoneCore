@@ -14,32 +14,29 @@ import org.bukkit.command.CommandSender;
  * @author Jeppe
  */
 public class Reload extends DefaultCommand{
-
-    private final ZonePlugin plugin;
-    
     public Reload(ZonePlugin plugin){
-        super(plugin);
-        this.plugin = plugin;
+        super("reload",plugin);
+        this.setShowInHelp(false);
     }
     
-    @Override
-    public void initDefaultCommand() {
-    }
-
-    @Override
-    public String getDefaultCommandName() {
-        return "reload";
-    }
-
-    @Override
-    public String[] getDefaultAliases() {
-        return plugin.getCommandAliases();
-    }
-
-    @Override
-    public String[] getDefaultSubAliases() {
-        return new String[]{"reload"};
-    }
+//    @Override
+//    public void initDefaultCommand() {
+//    }
+//
+//    @Override
+//    public String getDefaultCommandName() {
+//        return "reload";
+//    }
+//
+//    @Override
+//    public String[] getDefaultAliases() {
+//        return plugin.getCommandAliases();
+//    }
+//
+//    @Override
+//    public String[] getDefaultSubAliases() {
+//        return new String[]{"reload"};
+//    }
     
     @Override
     public void run(ZonePlugin plugin, CommandSender cs, Command cmnd, String[] args) {
@@ -54,5 +51,10 @@ public class Reload extends DefaultCommand{
     @Override
     public String getUsage() {
         return getDefaultUsage();
+    }
+
+    @Override
+    public DefaultCommand clone(ZonePlugin plugin) {
+        return new Reload(plugin);
     }
 }

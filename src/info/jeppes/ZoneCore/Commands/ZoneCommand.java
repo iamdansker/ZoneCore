@@ -7,27 +7,44 @@ package info.jeppes.ZoneCore.Commands;
 import info.jeppes.ZoneCore.ZonePlugin;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  *
  * @author Jeppe
  */
 public interface ZoneCommand extends CommandExecutor{
-//    public void runCommand(ZoneGate plugin, Player player, String[] args);
     public void run(ZonePlugin plugin, CommandSender cs, org.bukkit.command.Command cmnd, String[] args);
+    public String getCommandName();
+    public String getName();
     public String getDescrption();
     public String getUsage();
     public String getDefaultUsage();
-    public boolean canRun(CommandSender cs);
+//    @Deprecated
+//    public boolean canRun(CommandSender cs);
+    public boolean canRun(CommandSender cs, String[] args);
+    public boolean hasSimplePermission(CommandSender cs);
+    public boolean hasPermission(CommandSender cs, String[] args);
     public void setShowInHelp(boolean show);
     public boolean showInHelp();
+    
+    public boolean isPlayerOnlineCommand();
+    public void setPlayerOnlineCommand(boolean playerOnlineCommand);
+    
+    public boolean isPrimaryCommand(String alias);
+    public void setIsPrimaryCommand(boolean isPrimaryCommand);
+    public void setIsPrimaryCommand(boolean isPrimaryCommand, String alias);
+    
     public boolean isHelpCommand(String alias);
-    public void setIsHelpCommand(boolean isHelpCommand);
-    public void setIsHelpCommand(boolean isHelpCommand, String alias);
+    public void setIsHelpCommand(boolean isPrimaryCommand);
+    public void setIsHelpCommand(boolean isPrimaryCommand, String alias);
+    
+    public Player toPlayerObject(CommandSender cs);
     
     public void sendMessage(CommandSender cs, String message);
     public void sendErrorMessage(CommandSender cs, String message);
     
+    public void playerOnlyCommandException(CommandSender cs);
     public void noPermissions(CommandSender cs);
     public void missingArguments(CommandSender cs);
     public void missingItemException(CommandSender cs,String item, String itemName);
