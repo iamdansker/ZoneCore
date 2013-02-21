@@ -64,7 +64,7 @@ public class AsynchroizedStorageManager implements Runnable{
         asynchronizedStorageHolders.clear();
     }
     public synchronized static ArrayList<AsynchronizedStorageHolder> getAndClearSchedualSaveList(){
-        ArrayList<AsynchronizedStorageHolder> schedualSaveList = getSchedualSaveList();
+        ArrayList<AsynchronizedStorageHolder> schedualSaveList = (ArrayList<AsynchronizedStorageHolder>) getSchedualSaveList().clone();
         clearSchedualSaveList();
         return schedualSaveList;
     }
