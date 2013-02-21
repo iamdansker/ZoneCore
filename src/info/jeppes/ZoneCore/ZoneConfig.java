@@ -151,6 +151,6 @@ public class ZoneConfig extends AsynchronizedYamlConfiguration{
     
     @Override
     public String toString(){
-        return "ZoneConfig[File name=\""+this.getName()+"\" path:\""+this.getCurrentPath()+"\"]";
+        return "ZoneConfig[File name=\""+this.getName()+"\" path:\""+this.file.getPath()+"\"]";
     }
 }
