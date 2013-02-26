@@ -4,6 +4,7 @@
  */
 package info.jeppes.ZoneCore.Commands;
 
+import info.jeppes.ZoneCore.Exceptions.NotEnoughArguementsException;
 import info.jeppes.ZoneCore.ZonePlugin;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,14 +23,16 @@ public interface ZoneCommand extends CommandExecutor{
     public String getDefaultUsage();
 //    @Deprecated
 //    public boolean canRun(CommandSender cs);
-    public boolean canRun(CommandSender cs, String[] args);
+    public boolean canRun(CommandSender cs, String[] args) throws NotEnoughArguementsException;
     public boolean hasSimplePermission(CommandSender cs);
     public boolean hasPermission(CommandSender cs, String[] args);
     public void setShowInHelp(boolean show);
     public boolean showInHelp();
     
-    public boolean isPlayerOnlineCommand();
-    public void setPlayerOnlineCommand(boolean playerOnlineCommand);
+    public boolean isPlayerOnlyCommand();
+    public void setPlayerOnlyCommand(boolean playerOnlyCommand);
+    public void setMinimumArguements(int minArgs);
+    public int getMinimumArguments();
     
     public boolean isPrimaryCommand(String alias);
     public void setIsPrimaryCommand(boolean isPrimaryCommand);

@@ -4,10 +4,12 @@
  */
 package info.jeppes.ZoneCore.Commands;
 
+import info.jeppes.ZoneCore.Exceptions.NotEnoughArguementsException;
 import info.jeppes.ZoneCore.ZoneCore;
 import info.jeppes.ZoneCore.ZonePlugin;
 import java.util.HashMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,6 +27,7 @@ public abstract class CommandData implements ZoneCommand{
     private final ZonePlugin plugin;
     private HashMap<String,Boolean> isPrimaryCommand = new HashMap<>();
     private HashMap<String,Boolean> isHelpCommand = new HashMap<>();
+    private int minArgs = 0;
     
     public CommandData(String commandName, ZonePlugin plugin){
         this.commandName = commandName;
@@ -57,15 +60,21 @@ public abstract class CommandData implements ZoneCommand{
     
     @Override
     public boolean onCommand(CommandSender cs, org.bukkit.command.Command cmnd, String string, String[] args) {
-        if(!canRun(cs,args)){
-            logCommand(args, cs, false);
-            noPermissions(cs);
-            return false;
+        try {
+            if(!canRun(cs,args)){
+                logCommand(args, cs, false);
+                noPermissions(cs);
+                return false;
+            } else {
+                logCommand(args, cs, true);
+                run(plugin,cs,cmnd,args);
+                //The command will display it's own error message if needed so it just need to return true
+                return true;
+            }
+        } catch (NotEnoughArguementsException ex) {
+            this.missingArguments(cs);
         }
-        logCommand(args, cs, true);
-        run(plugin,cs,cmnd,args);
-        //The command will display it's own error message if needed so it just need to return true
-        return true;
+        return false;
     }
     
 //    @Override
@@ -74,11 +83,14 @@ public abstract class CommandData implements ZoneCommand{
 //        return ZoneCore.hasPermission(cs , plugin.getName() + "." + commandName);
 //    }
     @Override
-    public boolean canRun(CommandSender cs, String[] args){
-        if(this.isPlayerOnlineCommand()){
+    public boolean canRun(CommandSender cs, String[] args) throws NotEnoughArguementsException{
+        if(this.isPlayerOnlyCommand()){
             if(!(cs instanceof Player)){
                 return false;
             }
+        }
+        if(args.length < this.getMinimumArguments()){
+            throw new NotEnoughArguementsException(args, args.length, getMinimumArguments());
         }
         return hasPermission(cs,args);
     }
@@ -92,23 +104,32 @@ public abstract class CommandData implements ZoneCommand{
     }
 
     @Override
-    public boolean isPlayerOnlineCommand() {
+    public boolean isPlayerOnlyCommand() {
         return playerOnlineCommand;
     }
     @Override
-    public void setPlayerOnlineCommand(boolean playerOnlineCommand) {
+    public void setPlayerOnlyCommand(boolean playerOnlineCommand) {
         this.playerOnlineCommand = playerOnlineCommand;
     }
     
     @Override
     public Player toPlayerObject(CommandSender cs){
-        if(this.isPlayerOnlineCommand()){
+        if(this.isPlayerOnlyCommand()){
             return (Player)cs;
         }
         if(cs instanceof Player){
             return (Player)cs;
         }
         return null;
+    }
+    
+    @Override
+    public void setMinimumArguements(int minArgs){
+        this.minArgs = minArgs;
+    }
+    @Override
+    public int getMinimumArguments(){
+        return minArgs;
     }
     
     @Override
