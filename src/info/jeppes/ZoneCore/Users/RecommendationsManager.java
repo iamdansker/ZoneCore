@@ -74,7 +74,7 @@ public class RecommendationsManager {
         ZoneUserManager.getUsersConfig().schedualSave();
         Player[] onlinePlayers = Bukkit.getOnlinePlayers();
         for(Player player : onlinePlayers){
-            player.sendMessage(ChatColor.GREEN+"A new vote season has started! Expect the top voters to be announced on the website soon!");
+//            player.sendMessage(ChatColor.GREEN+"A new vote season has started! Expect the top voters to be announced on the website soon!");
         }
     }
     

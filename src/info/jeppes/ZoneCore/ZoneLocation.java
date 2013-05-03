@@ -8,7 +8,7 @@ import info.jeppes.ZoneWorld.ZoneWorld;
 import info.jeppes.ZoneWorld.ZoneWorldAPI;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R1.CraftWorld;
 import org.bukkit.util.Vector;
 
 /**

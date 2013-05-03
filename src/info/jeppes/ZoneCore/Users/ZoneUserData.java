@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -23,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
  * @author Jeppe
  */
 public class ZoneUserData extends BukkitPlayerWrapper{
-
 
     public enum ServerGroup {
         Owner,

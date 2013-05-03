@@ -21,7 +21,6 @@ public class SubCommandManager extends Command implements CommandExecutor{
     
     public SubCommandManager(String alias){
         super(alias);
-        
     }
     
     @Override

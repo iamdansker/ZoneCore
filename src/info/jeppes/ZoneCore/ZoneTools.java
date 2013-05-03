@@ -5,6 +5,7 @@
 package info.jeppes.ZoneCore;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Color;
@@ -246,6 +247,29 @@ public class ZoneTools {
             }
         }
         directory.delete();
+    }
+    public static long getDirectorySize(File directory) {
+        long size = 0;
+        File[] files = directory.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    size += getDirectorySize(f);
+                } else {
+                    size += f.length();
+                }
+            }
+        }
+        return size;
+    }
+    
+    public static String formateNumberToString(double value) {
+        return formateNumberToString(value,2,BigDecimal.ROUND_DOWN);
+    }
+    public static String formateNumberToString(double value, int decimals, int rounding) {
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(decimals,rounding);
+        return bd.toPlainString();
     }
     
     public static int[] getTimeDDHHMMSS(long time) {     

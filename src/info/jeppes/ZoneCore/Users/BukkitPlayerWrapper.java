@@ -1041,4 +1041,44 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     public void resetMaxHealth() {
         player.resetMaxHealth();
     }
+    
+    @Override
+    public void setPlayerWeather(WeatherType wt) {
+        player.setPlayerWeather(wt);
+    }
+
+    @Override
+    public WeatherType getPlayerWeather() {
+        return player.getPlayerWeather();
+    }
+
+    @Override
+    public void resetPlayerWeather() {
+        player.resetPlayerWeather();
+    }
+
+    @Override
+    public boolean isOnGround() {
+        return player.isOnGround();
+    }
+
+    @Override
+    public void setCustomName(String string) {
+        player.setCustomName(string);
+    }
+
+    @Override
+    public String getCustomName() {
+        return player.getCustomName();
+    }
+
+    @Override
+    public void setCustomNameVisible(boolean bln) {
+        player.setCustomNameVisible(bln);
+    }
+
+    @Override
+    public boolean isCustomNameVisible() {
+        return player.isCustomNameVisible();
+    }
 }
