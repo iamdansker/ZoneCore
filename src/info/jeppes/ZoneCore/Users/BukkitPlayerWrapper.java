@@ -27,6 +27,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 /**
@@ -1080,5 +1081,15 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     @Override
     public boolean isCustomNameVisible() {
         return player.isCustomNameVisible();
+    }
+    
+    @Override
+    public Scoreboard getScoreboard() {
+        return player.getScoreboard();
+    }
+
+    @Override
+    public void setScoreboard(Scoreboard scrbrd) throws IllegalArgumentException, IllegalStateException {
+        player.setScoreboard(scrbrd);
     }
 }
