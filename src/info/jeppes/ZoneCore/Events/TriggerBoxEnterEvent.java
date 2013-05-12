@@ -1,4 +1,4 @@
-package info.jeppes.ZoneCore.Listeners;
+package info.jeppes.ZoneCore.Events;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;

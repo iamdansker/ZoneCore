@@ -1,7 +1,7 @@
 package info.jeppes.ZoneCore.TriggerBoxes;
 
-import info.jeppes.ZoneCore.Listeners.TriggerBoxEnterEvent;
-import info.jeppes.ZoneCore.Listeners.TriggerBoxLeaveEvent;
+import info.jeppes.ZoneCore.Events.TriggerBoxEnterEvent;
+import info.jeppes.ZoneCore.Events.TriggerBoxLeaveEvent;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.util.ArrayList;
 import org.bukkit.Bukkit;

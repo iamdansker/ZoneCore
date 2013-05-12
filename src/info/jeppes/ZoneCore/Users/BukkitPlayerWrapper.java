@@ -4,6 +4,7 @@
  */
 package info.jeppes.ZoneCore.Users;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.*;
 import org.bukkit.*;
