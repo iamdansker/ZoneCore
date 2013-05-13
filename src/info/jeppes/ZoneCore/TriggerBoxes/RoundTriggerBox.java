@@ -4,10 +4,8 @@
  */
 package info.jeppes.ZoneCore.TriggerBoxes;
 
-import java.awt.Point;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 
 /**
  *
