@@ -256,12 +256,17 @@ public class ZoneUserData extends BukkitPlayerWrapper{
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
         this.setPlayer(event.getPlayer());
-        this.sendMesssagesWhenOnline();
-        this.giveItemsWhenOnline();
-        this.giveLevelsWhenOnline();
         config.set("lastjoined", System.currentTimeMillis());
         config.set("playtimecheck",System.currentTimeMillis());
         ZoneUserManager.getUsersConfig().schedualSave();
+        Bukkit.getScheduler().runTaskLater(ZoneCore.getCorePlugin(), new Runnable(){
+            @Override
+            public void run() {
+                sendMesssagesWhenOnline();
+                giveItemsWhenOnline();
+                giveLevelsWhenOnline();
+            }
+        }, 20);
     }
     @Override
     public void saveConfig(){

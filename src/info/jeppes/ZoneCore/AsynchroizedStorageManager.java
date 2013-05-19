@@ -6,6 +6,8 @@
 package info.jeppes.ZoneCore;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Author: Jeppe Boysen Vennekilde
@@ -43,6 +45,7 @@ public class AsynchroizedStorageManager implements Runnable{
     
     @Override
     public void run() {
+        System.out.println("Save debug");
         save();
     }
     

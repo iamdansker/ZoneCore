@@ -280,6 +280,11 @@ public class ZoneTools {
         return new int[]{days,hours,minutes,seconds};
     }
     
+    /**
+     * returns the time as a String, example: 2 days 1 hour 53 minutes and 32 seconds
+     * @param time
+     * @return
+     */
     public static String getTimeDDHHMMSSString(long time){
         int[] timeDDHHMMSS = getTimeDDHHMMSS(time);
         boolean useDays = timeDDHHMMSS[0] != 0;
@@ -292,6 +297,11 @@ public class ZoneTools {
                 ((useHours || useMinuts) && useSeconds ? "and " : "")+
                 (useSeconds ? (timeDDHHMMSS[3] +" second" + (timeDDHHMMSS[3] == 1 ? "" : "s")) : "");
     }
+    /**
+     * Works like getTimeDDHHMMSSString(Long) but will not show any number that equals 0
+     * @param time
+     * @return
+     */
     public static String getTimeDDHHMMSSStringShort(long time){
         int[] timeDDHHMMSS = getTimeDDHHMMSS(time);
         return 
@@ -300,6 +310,11 @@ public class ZoneTools {
                 (timeDDHHMMSS[0] != 0 && timeDDHHMMSS[1] != 0 && timeDDHHMMSS[2] != 0 ? (timeDDHHMMSS[2] + " minute"+ (timeDDHHMMSS[2] == 1 ? " " : "s ")) : "") + 
                 (timeDDHHMMSS[3] != 0 ? (timeDDHHMMSS[3] + " second"+ (timeDDHHMMSS[3] == 1 ? " " : "s ")) : "");
     }
+    /**
+     * returns the time as a String, example: 1 hour 53 minutes and 32 seconds
+     * @param time
+     * @return
+     */
     public static String getTimeHHMMSSString(long time){
         int[] timeDDHHMMSS = getTimeDDHHMMSS(time);
         return 
@@ -307,6 +322,11 @@ public class ZoneTools {
                 timeDDHHMMSS[2] +" minute" + (timeDDHHMMSS[2] == 1 ? " " : "s ") + 
                 " and " + timeDDHHMMSS[3] +" second" + (timeDDHHMMSS[3] == 1 ? "" : "s"); 
     }
+    /**
+     * Works like getTimeHHMMSSString(Long) but will not show any number that equals 0
+     * @param time
+     * @return
+     */
     public static String getTimeHHMMSSStringShort(long time){
         int[] timeDDHHMMSS = getTimeDDHHMMSS(time);
         boolean useHours = timeDDHHMMSS[1] != 0;

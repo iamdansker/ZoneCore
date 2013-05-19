@@ -242,6 +242,23 @@ public abstract class ZonePlugin extends JavaPlugin{
         cs.sendMessage(ChatColor.LIGHT_PURPLE + getName() + " Error: "+ChatColor.RED+message);
     }
 
+    public void initCommandsFromPackage(String packageName) {
+        //Load commands from plugin package
+        Class[] classesInPackage = null;
+        if(packageName != null){
+            classesInPackage = getClassesInPackage(packageName,null);
+            for(Class commandClass : classesInPackage){
+                try {
+                    if(ZoneCommand.class.isAssignableFrom(commandClass)){
+                        ZoneCommand zoneCommand = (ZoneCommand) commandClass.newInstance();
+                        commandManager.registreCommand(zoneCommand);
+                    }
+                } catch (InstantiationException | IllegalAccessException ex) {
+                    Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
     private void initCommands() {
         commandManager = new ZoneCommandManager(this);
         //Load commands from plugin package
@@ -262,19 +279,7 @@ public abstract class ZonePlugin extends JavaPlugin{
 //                    }
 //                }
         String initCommandPackageDirectory = initCommandPackageDirectory();
-        if(initCommandPackageDirectory != null){
-            classesInPackage = getClassesInPackage(initCommandPackageDirectory,null);
-            for(Class commandClass : classesInPackage){
-                try {
-                    if(ZoneCommand.class.isAssignableFrom(commandClass)){
-                        ZoneCommand zoneCommand = (ZoneCommand) commandClass.newInstance();
-                        commandManager.registreCommand(zoneCommand);
-                    }
-                } catch (InstantiationException | IllegalAccessException ex) {
-                    Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+        initCommandsFromPackage(initCommandPackageDirectory);
     }
     	/**
 	 * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
