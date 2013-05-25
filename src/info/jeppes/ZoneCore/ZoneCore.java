@@ -148,6 +148,12 @@ public class ZoneCore extends ZoneAPI{
     public void sendErrorMessage(CommandSender cs, String message){
         cs.sendMessage(ChatColor.LIGHT_PURPLE + getPlugin().getName() + " Error: "+ChatColor.RED+message);
     }
+    public void sendMessage(CommandSender cs, String message, String tag){
+        cs.sendMessage(ChatColor.BLUE + tag + ": "+ChatColor.GREEN+message);
+    }
+    public void sendErrorMessage(CommandSender cs, String message, String tag){
+        cs.sendMessage(ChatColor.LIGHT_PURPLE + tag + " Error: "+ChatColor.RED+message);
+    }
     
     public static void addZonePlugin(ZonePlugin plugin){
         zonePlugins.put(plugin.getName().toLowerCase(), plugin);

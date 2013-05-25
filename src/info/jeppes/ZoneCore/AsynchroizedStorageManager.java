@@ -45,7 +45,6 @@ public class AsynchroizedStorageManager implements Runnable{
     
     @Override
     public void run() {
-        System.out.println("Save debug");
         save();
     }
     

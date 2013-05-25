@@ -35,8 +35,6 @@ public class ZoneCorePlugin extends ZonePlugin{
 
     @Override
     public void loadDefaultConfig(ZoneConfig config) {
-        AsynchroizedStorageManager asynchroizedStorageManager = new AsynchroizedStorageManager();
-        this.addSchedueledBukkitTask(Bukkit.getScheduler().runTaskTimerAsynchronously(this, asynchroizedStorageManager,5,5));
         
         
         ZoneCore.addConfigDefault(config);
@@ -93,6 +91,8 @@ public class ZoneCorePlugin extends ZonePlugin{
     public void onEnable(){
         super.onEnable();
         loadCommandsFromPluginDirectory();
+        AsynchroizedStorageManager asynchroizedStorageManager = new AsynchroizedStorageManager();
+        this.addSchedueledBukkitTask(Bukkit.getScheduler().runTaskTimerAsynchronously(this, asynchroizedStorageManager,5,5));
     }
     
     @Override
