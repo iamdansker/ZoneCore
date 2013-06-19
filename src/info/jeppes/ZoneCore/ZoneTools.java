@@ -12,6 +12,7 @@ import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -130,6 +131,41 @@ public class ZoneTools {
             }
         }
         return list;
+    }
+    
+    
+    public List<Location> getBlockOfTypeInArea(Material material, Location location, int radius){
+        return getBlockOfTypeInArea(material.getId(),location,radius);
+    }
+    public List<Location> getBlockOfTypeInArea(Material material, byte data, Location location, int radius){
+        return getBlockOfTypeInArea(material.getId(),data,location,radius);
+    }
+    public List<Location> getBlockOfTypeInArea(int typeId, Location location, int radius){
+        return getBlockOfTypeInArea(typeId,(byte)-1,location,radius);
+    }
+    public List<Location> getBlockOfTypeInArea(int typeId, byte data, Location location, int radius){
+        ArrayList<Location> blocks = new ArrayList();
+        World world = location.getWorld();
+        int dx = location.getBlockX() - radius;
+        int dy = location.getBlockY() - radius;
+        int dz = location.getBlockZ() - radius;
+        for(int x = dx; x < dx + radius * 2; x++){
+            for(int y = dy; y < dy + radius * 2; y++){
+                for(int z = dz; z < dz + radius * 2; z++){
+                    int blockTypeIdAt = world.getBlockTypeIdAt(x, y, z);
+                    if(blockTypeIdAt == typeId){
+                        if(data >= 0){
+                            if(world.getBlockAt(x, y, z).getData() == data){
+                                blocks.add(new Location(world,x,y,z));
+                            }
+                        } else {
+                            blocks.add(new Location(world,x,y,z));
+                        }
+                    }
+                }
+            }
+        }
+        return blocks;
     }
     
     public static Material getMaterialFromString(String arg){
@@ -273,10 +309,10 @@ public class ZoneTools {
     }
     
     public static int[] getTimeDDHHMMSS(long time) {     
-        int seconds = (int) (time / 1000) % 60;
-        int minutes = (int) ((time / 60000) % 60);
-        int hours   = (int) ((time / 3600000) % 24);
-        int days    = (int) ((time / 86400000) % 60);
+        int seconds = (int) Math.ceil((time / 1000d) % 60);
+        int minutes = (int) (time / 60000) % 60;
+        int hours   = (int) (time / 3600000) % 24;
+        int days    = (int) (time / 86400000) % 60;
         return new int[]{days,hours,minutes,seconds};
     }
     
