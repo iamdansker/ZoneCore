@@ -23,6 +23,8 @@ public interface ZoneCommand extends CommandExecutor{
     public String getDefaultUsage();
 //    @Deprecated
 //    public boolean canRun(CommandSender cs);
+    public void setPermissionNodes(String[] permissionNodes);
+    public String[] getPermissionNodes();
     public boolean canRun(CommandSender cs, String[] args) throws NotEnoughArguementsException;
     public boolean hasSimplePermission(CommandSender cs);
     public boolean hasPermission(CommandSender cs, String[] args);

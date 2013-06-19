@@ -27,29 +27,37 @@ public abstract class CommandData implements ZoneCommand{
     private HashMap<String,Boolean> isPrimaryCommand = new HashMap<>();
     private HashMap<String,Boolean> isHelpCommand = new HashMap<>();
     private int minArgs = 0;
+    private String[] permissionNodes;
     
     public CommandData(String commandName, ZonePlugin plugin){
-        this.commandName = commandName;
-        this.commandAliases = plugin.getCommandAliases();
-        this.subCommandAliases = new String[]{commandName};
-        this.plugin = plugin;
+        this(commandName,plugin.getCommandAliases(),plugin);
+//        this.commandName = commandName;
+//        this.commandAliases = plugin.getCommandAliases();
+//        this.subCommandAliases = new String[]{commandName};
+//        this.permissionNodes = new String[]{plugin.getName()};
+//        this.plugin = plugin;
     }
     public CommandData(String commandName, String commandAlias, ZonePlugin plugin){
-        this.commandName = commandName;
-        this.commandAliases = new String[]{commandAlias};
-        this.subCommandAliases = new String[]{commandName};
-        this.plugin = plugin;
+        this(commandName,new String[]{commandAlias},plugin);
+//        this.commandName = commandName;
+//        this.commandAliases = new String[]{commandAlias};
+//        this.subCommandAliases = new String[]{commandName};
+//        this.permissionNodes = new String[]{plugin.getName()};
+//        this.plugin = plugin;
     }
     public CommandData(String commandName, String[] commandAliases, ZonePlugin plugin){
-        this.commandName = commandName;
-        this.commandAliases = commandAliases;
-        this.subCommandAliases = new String[]{commandName};
-        this.plugin = plugin;
+        this(commandName,commandAliases,new String[]{commandName},plugin);
+//        this.commandName = commandName;
+//        this.commandAliases = commandAliases;
+//        this.subCommandAliases = new String[]{commandName};
+//        this.permissionNodes = new String[]{plugin.getName()};
+//        this.plugin = plugin;
     }
     public CommandData(String commandName, String[] commandAliases, String[] subCommandAliases, ZonePlugin plugin){
         this.commandName = commandName;
         this.commandAliases = commandAliases;
         this.subCommandAliases = subCommandAliases;
+        this.permissionNodes = new String[]{plugin.getName()};
         this.plugin = plugin;
     }
     
@@ -81,6 +89,17 @@ public abstract class CommandData implements ZoneCommand{
 //    public boolean canRun(CommandSender cs){
 //        return ZoneCore.hasPermission(cs , plugin.getName() + "." + commandName);
 //    }
+    
+    @Override
+    public void setPermissionNodes(String[] permissionNodes) {
+        this.permissionNodes = permissionNodes;
+    }
+
+    @Override
+    public String[] getPermissionNodes() {
+        return permissionNodes;
+    }
+    
     @Override
     public boolean canRun(CommandSender cs, String[] args) throws NotEnoughArguementsException{
         if(this.isPlayerOnlyCommand()){
@@ -95,7 +114,12 @@ public abstract class CommandData implements ZoneCommand{
     }
     @Override
     public boolean hasSimplePermission(CommandSender cs){
-        return ZoneCore.hasPermission(cs , plugin.getName() + "." + commandName);
+        for(String permissionNode : getPermissionNodes()){
+            if(ZoneCore.hasPermission(cs , permissionNode + "." + commandName)){
+                return true;
+            }
+        }
+        return false;
     }
     @Override
     public boolean hasPermission(CommandSender cs, String[] args){

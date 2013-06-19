@@ -23,6 +23,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -242,6 +243,13 @@ public abstract class ZonePlugin extends JavaPlugin{
         cs.sendMessage(ChatColor.LIGHT_PURPLE + getName() + " Error: "+ChatColor.RED+message);
     }
 
+    public boolean hasPermission(Player player, String permission){
+        return ZoneCore.hasPermission(player,permission);
+    }
+    public boolean hasPermission(CommandSender cs, String permission){
+        return ZoneCore.hasPermission(cs,permission);
+    }
+    
     public void initCommandsFromPackage(String packageName) {
         //Load commands from plugin package
         Class[] classesInPackage = null;
