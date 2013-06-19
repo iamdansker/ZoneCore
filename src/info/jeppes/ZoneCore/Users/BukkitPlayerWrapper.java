@@ -60,7 +60,7 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     
     @Override
     public String getDisplayName() {
-        return player.getDisplayName();
+        return player != null ? player.getDisplayName() : name;
     }
 
     @Override

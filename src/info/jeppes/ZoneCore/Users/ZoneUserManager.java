@@ -4,6 +4,7 @@
  */
 package info.jeppes.ZoneCore.Users;
 
+import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.util.HashMap;
@@ -106,6 +107,10 @@ public class ZoneUserManager implements Listener{
             ZoneUserData newUser = new ZoneUserData(player,null);
             users.put(newUser.getName().toLowerCase(), newUser);
             getUsersConfig().schedualSave();
+            
+            NewZoneUserEvent triggerBoxEnterEvent = new NewZoneUserEvent(newUser);
+            Bukkit.getPluginManager().callEvent(triggerBoxEnterEvent);
+            
             if(ZoneCore.getCorePlugin().inDebugMode()) {
                 System.out.println("New ZoneUser: "+player.getName());
             }
