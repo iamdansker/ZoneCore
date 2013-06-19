@@ -23,6 +23,7 @@ public interface ZoneUser extends Player{
     public ZoneUserData.ServerGroup getServerGroup(World world);
     public ZoneUserData.ServerGroup getServerGroup();
     
+    public void setAndSave(String key, Object obj);
     public HashMap<String,Object> getTempData();
     public Object getTempData(String key);
     public void addTempData(String key, Object obj);

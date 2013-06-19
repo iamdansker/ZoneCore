@@ -109,6 +109,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
         return config;
     }
     
+    @Override
     public void setAndSave(String key, Object obj){
         getConfig().set(key, obj);
         saveConfig();
