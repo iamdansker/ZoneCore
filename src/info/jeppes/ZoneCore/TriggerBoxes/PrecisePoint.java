@@ -4,7 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-public class PrecisePoint extends Point2D{
+public class PrecisePoint extends Point2D implements Cloneable{
     public double x;
     public double y;
     
@@ -63,5 +63,10 @@ public class PrecisePoint extends Point2D{
     @Override
     public String toString(){
         return this.getClass().getName()+"[x="+x+",y="+y+"]";
+    }
+    
+    @Override
+    public PrecisePoint clone(){
+        return new PrecisePoint(x,y);
     }
 }

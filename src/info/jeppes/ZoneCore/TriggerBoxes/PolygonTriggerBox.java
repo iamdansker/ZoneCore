@@ -12,7 +12,7 @@ public abstract class PolygonTriggerBox extends TriggerBox{
     private double minY;
     private double maxY;
     private double radius = 0;
-    private Point2D simpleCentroid = null;
+    private PrecisePoint simpleCentroid = null;
     
     public PolygonTriggerBox(ArrayList<Location> polygon, String name) throws Exception{
         super(polygon.get(0).getWorld(),name);
@@ -70,6 +70,13 @@ public abstract class PolygonTriggerBox extends TriggerBox{
         return 0.5 * sum;
     }
     
+    private void recalculateMinAndMaxY(){
+        for(Point2D location : polygon){
+            minY = Math.min(minY, location.getY());
+            maxY = Math.max(maxY, location.getY());
+        }
+    }
+    
     private void recalculateRadiusAndCentroid(){
         double longestDiameter = 0;
         Point2D usedPoint1 = null;
@@ -88,12 +95,21 @@ public abstract class PolygonTriggerBox extends TriggerBox{
         double angle = PrecisePoint.angleFrom(usedPoint1, usedPoint2);
         simpleCentroid = new PrecisePoint(usedPoint1.getX() + (Math.cos(angle) * radius),usedPoint1.getY() + (Math.sin(angle) * radius));
     }
-
+    
+    public ArrayList<Point2D> getPolygon(){
+        return (ArrayList<Point2D>)polygon.clone();
+    }
+    public void setPolygon(ArrayList<Point2D> polygon){
+        this.polygon = polygon;
+        recalculateRadiusAndCentroid();
+        recalculateMinAndMaxY();
+    }
+    
     public double getRadius() {
         return radius;
     }
     public Point2D getSimpleCentroid(){
-        return simpleCentroid;
+        return simpleCentroid.clone();
     }
     
     @Override
