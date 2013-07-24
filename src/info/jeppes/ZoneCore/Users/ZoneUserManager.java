@@ -70,16 +70,8 @@ public class ZoneUserManager implements Listener{
     
     @EventHandler(priority=EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event){
-        Location location = event.getPlayer().getLocation();
         ZoneUser user = ZoneCore.getUser(event.getPlayer());
         if(user != null){
-            ConfigurationSection config = user.getConfig();
-            config.set("lastleft", System.currentTimeMillis());
-            config.set("lastlocation.world", location.getWorld().getName());
-            config.set("lastlocation.x", location.getX());
-            config.set("lastlocation.y", location.getY());
-            config.set("lastlocation.z", location.getZ());
-            user.updatePlayTime();
             user.saveConfig();
         }
     }
@@ -102,18 +94,15 @@ public class ZoneUserManager implements Listener{
         }
     }
     
-    public static boolean newUser(Player player) {
+    public boolean newUser(Player player) {
         if(!users.containsKey(player.getName().toLowerCase())){
             ZoneUserData newUser = new ZoneUserData(player,null);
             users.put(newUser.getName().toLowerCase(), newUser);
             getUsersConfig().schedualSave();
             
-            NewZoneUserEvent triggerBoxEnterEvent = new NewZoneUserEvent(newUser);
-            Bukkit.getPluginManager().callEvent(triggerBoxEnterEvent);
+            NewZoneUserEvent newZoneUserEvent = new NewZoneUserEvent(this,newUser);
+            Bukkit.getPluginManager().callEvent(newZoneUserEvent);
             
-            if(ZoneCore.getCorePlugin().inDebugMode()) {
-                System.out.println("New ZoneUser: "+player.getName());
-            }
             return true;
         }
         return false;

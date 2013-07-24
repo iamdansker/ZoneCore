@@ -5,6 +5,7 @@
 package info.jeppes.ZoneCore.Events;
 
 import info.jeppes.ZoneCore.Users.ZoneUser;
+import info.jeppes.ZoneCore.Users.ZoneUserManager;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -14,18 +15,24 @@ import org.bukkit.event.HandlerList;
  */
 public class NewZoneUserEvent extends Event{
     private static final HandlerList handlers = new HandlerList();
+    private final ZoneUserManager userManager;
     private final ZoneUser newUser;
 
     /**
      *
      * @param newUser
      */
-    public NewZoneUserEvent(ZoneUser newUser){
+    public NewZoneUserEvent(ZoneUserManager userManager, ZoneUser newUser){
+        this.userManager = userManager;
         this.newUser = newUser;
     }
     
     public ZoneUser getZoneUser() {
         return newUser;
+    }
+    
+    public ZoneUserManager getZoneUserManager(){
+        return userManager;
     }
  
     @Override

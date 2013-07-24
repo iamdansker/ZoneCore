@@ -56,7 +56,7 @@ public abstract class TriggerBox implements Listener{
                 isInside.remove(entity);
                 left(entity);
                 if(useEvents){
-                    TriggerBoxLeaveEvent triggerBoxEnterEvent = new TriggerBoxLeaveEvent(entity);
+                    TriggerBoxLeaveEvent triggerBoxEnterEvent = new TriggerBoxLeaveEvent(this,entity);
                     Bukkit.getPluginManager().callEvent(triggerBoxEnterEvent);
                 }
             }
@@ -70,7 +70,7 @@ public abstract class TriggerBox implements Listener{
                     isInside.add(entity);
                     entered(entity);
                     if(useEvents){
-                        TriggerBoxEnterEvent triggerBoxEnterEvent = new TriggerBoxEnterEvent(entity);
+                        TriggerBoxEnterEvent triggerBoxEnterEvent = new TriggerBoxEnterEvent(this,entity);
                         Bukkit.getPluginManager().callEvent(triggerBoxEnterEvent);
                     }
                 }
@@ -81,7 +81,7 @@ public abstract class TriggerBox implements Listener{
                     isInside.remove(entity);
                     left(entity);
                     if(useEvents){
-                        TriggerBoxLeaveEvent triggerBoxEnterEvent = new TriggerBoxLeaveEvent(entity);
+                        TriggerBoxLeaveEvent triggerBoxEnterEvent = new TriggerBoxLeaveEvent(this,entity);
                         Bukkit.getPluginManager().callEvent(triggerBoxEnterEvent);
                     }
                 }

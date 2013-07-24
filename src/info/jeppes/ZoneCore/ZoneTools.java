@@ -8,6 +8,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -166,6 +167,24 @@ public class ZoneTools {
             }
         }
         return blocks;
+    }
+    
+    public static String parseColorCodes(String originalString){
+        StringBuilder newString = new StringBuilder();
+        String[] split = originalString.split("&");
+        boolean first = true;
+        for(String colorSegment : split){
+            if(first){
+                first = false;
+                newString.append(colorSegment);
+                continue;
+            }
+            String colorString = colorSegment.substring(0,1);
+            ChatColor color = ChatColor.getByChar(colorString);
+            String rest = colorString.substring(1);
+            newString.append(color.toString()).append(rest);
+        }
+        return newString.toString();
     }
     
     public static Material getMaterialFromString(String arg){

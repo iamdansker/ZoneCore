@@ -6,9 +6,10 @@ package info.jeppes.ZoneCore;
 
 import info.jeppes.ZoneWorld.ZoneWorld;
 import info.jeppes.ZoneWorld.ZoneWorldAPI;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.util.Vector;
 
 /**
@@ -144,9 +145,16 @@ public class ZoneLocation extends Location{
     
     public String getSimpleInfo() {
         return  getWorldName() +
-                "{"+getX()+
-                ","+getY()+
-                ","+getZ()+
+                "X:"+getBlockX()+
+                " Y:"+getBlockY()+
+                " Z:"+getBlockZ()+
                 "} Direction: "+ZoneTools.yawToDirection(this.getYaw());
+    }
+    public String getSimpleInfo(ChatColor c1, ChatColor c2, ChatColor c3) {
+        return  c1 + getWorldName() +
+                c2 + " X:"+c3+getBlockX()+
+                c2 + " Y:"+c3+getBlockY()+
+                c2 + " Z:"+c3+getBlockZ()+
+                c2 + " Direction: "+c3+ZoneTools.yawToDirection(this.getYaw());
     }
 }

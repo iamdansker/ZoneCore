@@ -12,13 +12,11 @@ import java.util.HashMap;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.Scoreboard;
 
 /**
  *
@@ -87,7 +85,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
 //            }
 //            return ServerGroup.valueOf(group.getName());
 //        } catch(Exception e){}
-        return null;
+        return getServerGroup();
     }
     @Override
     public ServerGroup getServerGroup(){
@@ -97,10 +95,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
     
     @Override
     public final void newUser() {
-        getUsersConfig().set(getName()+".lastjoined", System.currentTimeMillis());
-        config = getUsersConfig().getConfigurationSection(getName());
-        getConfig().set("playtime",0);
-        getConfig().set("playtimecheck",System.currentTimeMillis());
+        getUsersConfig().set(getName(), null);
         saveConfig();
     }
 

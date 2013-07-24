@@ -354,17 +354,17 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     }
 
     @Override
-    public int getHealth() {
+    public double getHealth() {
         return player.getHealth();
     }
 
     @Override
-    public void setHealth(int i) {
+    public void setHealth(double i) {
         player.setHealth(i);
     }
 
     @Override
-    public int getMaxHealth() {
+    public double getMaxHealth() {
         return player.getMaxHealth();
     }
 
@@ -449,12 +449,12 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     }
 
     @Override
-    public void damage(int i) {
+    public void damage(double i) {
         player.damage(i);
     }
 
     @Override
-    public void damage(int i, Entity entity) {
+    public void damage(double i, Entity entity) {
         player.damage(i,entity);
     }
 
@@ -469,12 +469,12 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     }
 
     @Override
-    public int getLastDamage() {
+    public double getLastDamage() {
         return player.getLastDamage();
     }
 
     @Override
-    public void setLastDamage(int i) {
+    public void setLastDamage(double i) {
         player.setLastDamage(i);
     }
 
@@ -1035,7 +1035,7 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     }
 
     @Override
-    public void setMaxHealth(int i) {
+    public void setMaxHealth(double i) {
         player.setMaxHealth(i);
     }
 
@@ -1092,5 +1092,56 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     @Override
     public void setScoreboard(Scoreboard scrbrd) throws IllegalArgumentException, IllegalStateException {
         player.setScoreboard(scrbrd);
+    }
+    
+    
+    @Override
+    public int _INVALID_getLastDamage() {
+        return (int)player.getLastDamage();
+    }
+
+    @Override
+    public void _INVALID_setLastDamage(int i) {
+        player.setLastDamage(i);
+    }
+
+    @Override
+    public void _INVALID_damage(int i) {
+        player.damage(i);
+    }
+
+    @Override
+    public void _INVALID_damage(int i, Entity entity) {
+        player.damage(i,entity);
+    }
+
+    @Override
+    public int _INVALID_getHealth() {
+        return (int)getHealth();
+    }
+
+    @Override
+    public void _INVALID_setHealth(int i) {
+        player.setHealth(i);
+    }
+
+    @Override
+    public int _INVALID_getMaxHealth() {
+        return (int)player.getMaxHealth();
+    }
+
+    @Override
+    public void _INVALID_setMaxHealth(int i) {
+        player.setMaxHealth(i);
+    }
+    
+    @Override
+    public boolean isScaledHealth() {
+        return player.isScaledHealth();
+    }
+
+    @Override
+    public void setScaleHealth(boolean bln) {
+        player.setScaleHealth(bln);
     }
 }
