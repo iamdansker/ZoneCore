@@ -17,11 +17,11 @@ public class PolygonTriggerBox extends TriggerBox{
     
     public PolygonTriggerBox(ArrayList<Location> polygon, String name) throws Exception{
         super(name);
+        this.setWorld(polygon.get(0).getWorld().getName());
         if(!isLocationsInSameWorld(polygon)){
             throw new Exception("Some locations are not in the same world");
         }
         this.setPolygon(getListFromLocationArray(polygon), true);
-        this.setWorld(polygon.get(0).getWorld().getName());
     }
     public PolygonTriggerBox(ArrayList<Point2D> polygon, String name, String WorldName){
         super(name,WorldName);
@@ -29,6 +29,7 @@ public class PolygonTriggerBox extends TriggerBox{
     }
     public PolygonTriggerBox(ArrayList<Location> polygon, String name, double minY, double maxY) throws Exception{
         super(name);
+        this.setWorld(polygon.get(0).getWorld().getName());
         if(!isLocationsInSameWorld(polygon)){
             throw new Exception("Some locations are not in the same world");
         }
@@ -36,7 +37,6 @@ public class PolygonTriggerBox extends TriggerBox{
         this.minY = minY;
         this.maxY = maxY;
         this.recalculateRadiusAndCentroid();
-        this.setWorld(polygon.get(0).getWorld().getName());
     }
     public PolygonTriggerBox(ArrayList<Point2D> polygon, String name, String WorldName, double minY, double maxY){
         super(name,WorldName);
