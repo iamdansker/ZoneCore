@@ -1,2 +1,22 @@
-/build/
-/dist/
+# Eclipse stuff
+/.classpath
+/.project
+/.settings
+
+# netbeans
+/nbproject
+/lib/nblibraries.properties
+/lib/CopyLibs
+
+#maven if used
+/build.xml
+/target
+
+# various other potential build files
+/build
+/bin
+/dist
+/manifest.mf
+
+# Mac filesystem dust
+/.DS_Store
