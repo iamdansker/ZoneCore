@@ -110,13 +110,13 @@ public abstract class TriggerBox implements Listener{
         if(getEventHandler() == null){
             return;
         }
-        getEventHandler().entered(entity);
+        getEventHandler().entered(this,entity);
     }
     public void left(Entity entity){
         if(getEventHandler() == null){
             return;
         }
-        getEventHandler().left(entity);
+        getEventHandler().left(this,entity);
     }
 
     public TriggerBoxEventHandler getEventHandler(){

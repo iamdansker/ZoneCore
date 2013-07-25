@@ -11,6 +11,6 @@ import org.bukkit.entity.Entity;
  * @author jeppe
  */
 public abstract class TriggerBoxEventHandler {
-    public abstract void entered(Entity entity);
-    public abstract void left(Entity entity);
+    public abstract void entered(TriggerBox triggerBox, Entity entity);
+    public abstract void left(TriggerBox triggerBox, Entity entity);
 }
