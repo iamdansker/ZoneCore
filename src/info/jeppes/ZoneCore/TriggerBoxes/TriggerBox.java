@@ -3,6 +3,7 @@ package info.jeppes.ZoneCore.TriggerBoxes;
 import info.jeppes.ZoneCore.Events.TriggerBoxEnterEvent;
 import info.jeppes.ZoneCore.Events.TriggerBoxLeaveEvent;
 import info.jeppes.ZoneCore.ZoneCore;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,12 +24,24 @@ public abstract class TriggerBox implements Listener{
     private boolean useEvents = false;
     private ArrayList<Entity> triggerEntities = new ArrayList();
     private ArrayList<Entity> isInside = new ArrayList();
-    private World world;
+    private String worldName;
     private String name;
+    private TriggerBoxEventHandler eventHandler = null;
     
-    public TriggerBox(World world, String name){
-        this.world = world;
+    public TriggerBox(String name){
+        this(name,null,false,true);
+    }
+    public TriggerBox(String name, String world){
+        this(name,world,false,true);
+    }
+    public TriggerBox(String name, String world, boolean useEvents){
+        this(name,world,useEvents,true);
+    }
+    public TriggerBox(String name, String world, boolean useEvents, boolean triggerByEveryone){
         this.name = name;
+        this.worldName = world;
+        this.useEvents = useEvents;
+        this.triggerByEveryone = triggerByEveryone;
         Bukkit.getPluginManager().registerEvents(this, ZoneCore.getCorePlugin());
     }
     
@@ -89,10 +102,30 @@ public abstract class TriggerBox implements Listener{
         }
     }
     public abstract boolean isInside(Location location);
+    public abstract boolean isInside(Point2D point, double y, String worldName);
+    public abstract boolean isInside(Point3D point, String worldName);
     public abstract Location getRandomLocationInsideBox();
-    public abstract void entered(Entity entity);
-    public abstract void left(Entity entity);
+    
+    public void entered(Entity entity){
+        if(getEventHandler() == null){
+            return;
+        }
+        getEventHandler().entered(entity);
+    }
+    public void left(Entity entity){
+        if(getEventHandler() == null){
+            return;
+        }
+        getEventHandler().left(entity);
+    }
 
+    public TriggerBoxEventHandler getEventHandler(){
+        return eventHandler;
+    }
+    public void setEventHandler(TriggerBoxEventHandler eventHandler){
+        this.eventHandler = eventHandler;
+    }
+    
     public boolean isTriggerByEveryone() {
         return triggerByEveryone;
     }
@@ -148,13 +181,23 @@ public abstract class TriggerBox implements Listener{
         return isInside;
     }
 
+    public String getWorldName() {
+        return worldName;
+    }
     public World getWorld() {
-        return world;
+        return Bukkit.getWorld(getWorldName());
     }
     public void setWorld(World world) {
-        this.world = world;
+        setWorld(world.getName());
     }
+    public void setWorld(String world) {
+        this.worldName = world;
+    }
+    
     public void delete(){
         HandlerList.unregisterAll(this);
+    }
+    public String toSaveString(){
+        return name+","+worldName+","+triggerByEveryone+","+useEvents;
     }
 }

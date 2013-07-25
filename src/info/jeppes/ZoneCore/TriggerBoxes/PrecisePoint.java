@@ -3,8 +3,9 @@ package info.jeppes.ZoneCore.TriggerBoxes;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 
-public class PrecisePoint extends Point2D implements Cloneable{
+public class PrecisePoint extends Point2D implements Cloneable, Serializable{
     public double x;
     public double y;
     
@@ -68,5 +69,24 @@ public class PrecisePoint extends Point2D implements Cloneable{
     @Override
     public PrecisePoint clone(){
         return new PrecisePoint(x,y);
+    }
+    
+    public String toSaveString(){
+        return toSaveString(this);
+    }
+    
+    public static String toSaveString(Point point){
+        return toSaveString(point.getX(),point.getY());
+    }
+    public static String toSaveString(Point2D point){
+        return toSaveString(point.getX(),point.getY());
+    }
+    public static String toSaveString(double x, double y){
+        return x+","+y;
+    }
+    
+    public static PrecisePoint toPrecisePoint(String saveString){
+        String[] split = saveString.split(",");
+        return new PrecisePoint(java.lang.Double.parseDouble(split[0]),java.lang.Double.parseDouble(split[1]));
     }
 }

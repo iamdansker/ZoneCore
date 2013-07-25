@@ -2,60 +2,62 @@ package info.jeppes.ZoneCore.TriggerBoxes;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
-public abstract class PolygonTriggerBox extends TriggerBox{
+public class PolygonTriggerBox extends TriggerBox{
 
-    private ArrayList<Point2D> polygon;
+    private ArrayList<Point2D> polygon = new ArrayList();
     private double minY;
     private double maxY;
     private double radius = 0;
     private PrecisePoint simpleCentroid = null;
     
     public PolygonTriggerBox(ArrayList<Location> polygon, String name) throws Exception{
-        super(polygon.get(0).getWorld(),name);
-        recalculateRadiusAndCentroid();
-        for(Location location : polygon){
-            if(!location.getWorld().equals(getWorld())){
-                throw new Exception("Some locations are not in the same world");
-            } else{
-                this.polygon.add(new PrecisePoint(location.getX(), location.getBlockZ()));
-                minY = Math.min(minY, location.getY());
-                maxY = Math.max(maxY, location.getY());
-            }
+        super(name);
+        if(!isLocationsInSameWorld(polygon)){
+            throw new Exception("Some locations are not in the same world");
         }
+        this.setPolygon(getListFromLocationArray(polygon), true);
+        this.setWorld(polygon.get(0).getWorld().getName());
+    }
+    public PolygonTriggerBox(ArrayList<Point2D> polygon, String name, String WorldName){
+        super(name,WorldName);
+        this.setPolygon(polygon, true);
     }
     public PolygonTriggerBox(ArrayList<Location> polygon, String name, double minY, double maxY) throws Exception{
-        super(polygon.get(0).getWorld(),name);
-        recalculateRadiusAndCentroid();
-        if(minY > maxY){
-            this.minY = maxY;
-            this.maxY = minY;
-        } else {
-            this.minY = minY;
-            this.maxY = maxY;
+        super(name);
+        if(!isLocationsInSameWorld(polygon)){
+            throw new Exception("Some locations are not in the same world");
         }
-        for(Location location : polygon){
-            if(!location.getWorld().equals(getWorld())){
-                throw new Exception("Some locations are not in the same world");
-            } else{
-                this.polygon.add(new PrecisePoint(location.getX(), location.getBlockZ()));
-            }
-        }
+        this.setPolygon(getListFromLocationArray(polygon), false);
+        this.minY = minY;
+        this.maxY = maxY;
+        this.recalculateRadiusAndCentroid();
+        this.setWorld(polygon.get(0).getWorld().getName());
     }
-    public PolygonTriggerBox(ArrayList<Point2D> polygon, World world, String name, double minY, double maxY) throws Exception{
-        super(world,name);
-        recalculateRadiusAndCentroid();
-        this.polygon = polygon;
-        if(minY > maxY){
-            this.minY = maxY;
-            this.maxY = minY;
-        } else {
-            this.minY = minY;
-            this.maxY = maxY;
-        }
+    public PolygonTriggerBox(ArrayList<Point2D> polygon, String name, String WorldName, double minY, double maxY){
+        super(name,WorldName);
+        this.setPolygon(polygon, false);
+        this.minY = minY;
+        this.maxY = maxY;
+        this.recalculateRadiusAndCentroid();
+    }
+    public PolygonTriggerBox(ArrayList<Point2D> polygon, String name, String WorldName, double minY, double maxY, boolean useEvents){
+        super(name,WorldName,useEvents);
+        this.setPolygon(polygon, false);
+        this.minY = minY;
+        this.maxY = maxY;
+        this.recalculateRadiusAndCentroid();
+    }
+    public PolygonTriggerBox(ArrayList<Point2D> polygon, String name, String WorldName, double minY, double maxY, boolean useEvents, boolean triggerByEveryone){
+        super(name,WorldName,useEvents,triggerByEveryone);
+        this.setPolygon(polygon, false);
+        this.minY = minY;
+        this.maxY = maxY;
+        this.recalculateRadiusAndCentroid();
     }
     
     // return getArea of polygon
@@ -103,13 +105,51 @@ public abstract class PolygonTriggerBox extends TriggerBox{
         simpleCentroid = new PrecisePoint(usedPoint1.getX() + (Math.cos(angle) * radius),usedPoint1.getY() + (Math.sin(angle) * radius));
     }
     
+    private boolean isLocationsInSameWorld(ArrayList<Location> polygon){
+        for(Location location : polygon){
+            if(!location.getWorld().equals(getWorldName())){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static ArrayList<Point2D> getListFromLocationArray(ArrayList<Location> polygon){
+        ArrayList<Point2D> tempPolygon = new ArrayList();
+        for(Location location : polygon){
+            tempPolygon.add(new PrecisePoint(location.getX(), location.getBlockZ()));
+        }
+        return tempPolygon;
+    }
+    
     public ArrayList<Point2D> getPolygon(){
         return (ArrayList<Point2D>)polygon.clone();
     }
-    public void setPolygon(ArrayList<Point2D> polygon){
+    
+    private void setPolygon(ArrayList<Point2D> polygon, boolean recalculate){
         this.polygon = polygon;
-        recalculateRadiusAndCentroid();
-        recalculateMinAndMaxY();
+        if(recalculate){
+            recalculateRadiusAndCentroid();
+            recalculateMinAndMaxY();
+        }
+    }
+    
+    public void setPolygon(ArrayList<Point2D> polygon){
+        setPolygon(polygon,true);
+    }
+    
+    public void setPolygonWithLocation(ArrayList<Location> polygon) throws Exception{
+        if(!isLocationsInSameWorld(polygon)){
+            throw new Exception("Some locations are not in the same world");
+        }
+        setPolygonWithLocation(polygon,polygon.get(0).getWorld());
+    }  
+    public void setPolygonWithLocation(ArrayList<Location> polygon, World world){
+        setPolygonWithLocation(polygon,world.getName());
+    }  
+    public void setPolygonWithLocation(ArrayList<Location> polygon, String worldName){
+        setWorld(worldName);
+        setPolygon(getListFromLocationArray(polygon),true);
     }
     
     public double getRadius() {
@@ -121,16 +161,22 @@ public abstract class PolygonTriggerBox extends TriggerBox{
     
     @Override
     public boolean isInside(Location location) {
+        return isInside(new Point3D(location), location.getWorld().getName());
+    }
+    @Override
+    public boolean isInside(Point2D point, double y, String worldName){
+        return isInside(new Point3D(point.getX(), y, point.getY()), worldName);
+    }
+    @Override
+    public boolean isInside(Point3D point, String worldName){
         //fast and easy check to see if the location is not inside the box
-        if(location.getY() < minY || maxY < location.getY() || !location.getWorld().equals(getWorld())){
+        if(point.getY() < minY || maxY < point.getY() || !worldName.equals(getWorldName())){
             return false;
         }
-        int i;
-        int j;
         boolean result = false;
-        for (i = 0, j = polygon.size() - 1; i < polygon.size(); j = i++) {
-            if ((polygon.get(i).getY() > location.getBlockZ()) != (polygon.get(j).getY() > location.getBlockZ()) &&
-                (location.getBlockX() < (polygon.get(j).getX() - polygon.get(i).getX()) * (location.getBlockZ() - polygon.get(i).getY()) / (polygon.get(j).getY()-polygon.get(i).getY()) + polygon.get(i).getX())) {
+        for (int i = 0, j = polygon.size() - 1; i < polygon.size(); j = i++) {
+            if ((polygon.get(i).getY() > point.getZ()) != (polygon.get(j).getY() > point.getZ()) &&
+                (point.getX() < (polygon.get(j).getX() - polygon.get(i).getX()) * (point.getZ() - polygon.get(i).getY()) / (polygon.get(j).getY()-polygon.get(i).getY()) + polygon.get(i).getX())) {
                 result = !result;
             }
         }
@@ -183,5 +229,49 @@ public abstract class PolygonTriggerBox extends TriggerBox{
             }
         }
         return location;
+    }
+    
+    @Override
+    public String toSaveString() {
+        StringBuilder saveString = new StringBuilder();
+        saveString.append(super.toSaveString()).append("|");
+        boolean first = true;
+        for(Point2D point : this.polygon){
+            if(!first){
+                saveString.append("_");
+            } else {
+                first = false;
+            }
+            saveString.append(PrecisePoint.toSaveString(point));
+        }
+        saveString.append("|");
+        saveString.append(minY).append(",").append(maxY);
+        return saveString.toString();
+    }
+    
+    public static PolygonTriggerBox getPolygonTriggerBox(String saveString){
+        return getPolygonTriggerBox(saveString,null);
+    }
+    public static PolygonTriggerBox getPolygonTriggerBox(String saveString, TriggerBoxEventHandler eventHandler){
+        String[] split = saveString.split("|");
+        //Base triggerbox parameters
+        String[] baseTriggerBoxString = split[0].split(",");
+        String name = baseTriggerBoxString[0];
+        String worldName = baseTriggerBoxString[1];
+        boolean useEvents = Boolean.parseBoolean(baseTriggerBoxString[2]);
+        boolean triggerByEveryone = Boolean.parseBoolean(baseTriggerBoxString[3]);
+        
+        ArrayList<Point2D> polygon = new ArrayList();
+        for(String precisePointString : split[1].split("_")){
+            polygon.add(PrecisePoint.toPrecisePoint(precisePointString));
+        }
+        
+        String[] polygonTriggerBoxString = split[2].split(",");;
+        double minY = Double.parseDouble(polygonTriggerBoxString[0]);
+        double maxY = Double.parseDouble(polygonTriggerBoxString[1]);
+        
+        PolygonTriggerBox polygonTriggerBox = new PolygonTriggerBox(polygon, worldName, name, minY, maxY, useEvents, triggerByEveryone);
+        polygonTriggerBox.setEventHandler(eventHandler);
+        return polygonTriggerBox;
     }
 }

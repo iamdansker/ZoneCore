@@ -46,7 +46,4 @@ public abstract class AsynchronizedYamlConfiguration extends YamlConfiguration i
     public void cancelSave(){
         AsynchroizedStorageManager.unschedualSave(this);
     }
-    
-    
-
 }

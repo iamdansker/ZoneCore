@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
  *
  * @author Jeppe
  */
-public class ZoneLocation extends Location{
+public class ZoneLocation extends Location {
     private String worldName;
     
     public ZoneLocation(String worldName, double x, double y, double z){
