@@ -71,7 +71,14 @@ public abstract class PolygonTriggerBox extends TriggerBox{
     }
     
     private void recalculateMinAndMaxY(){
+        boolean first = true;
         for(Point2D location : polygon){
+            if(first){
+                first = false;
+                minY = location.getY();
+                maxY = location.getY();
+                continue;
+            }
             minY = Math.min(minY, location.getY());
             maxY = Math.max(maxY, location.getY());
         }
