@@ -9,20 +9,20 @@ package info.jeppes.ZoneCore;
  * @author Jeppe
  */
 public enum WorldTime {
-    Sunrise,
-    Day,
-    Sunset,
-    Night;
+    SUNRISE,
+    DAY,
+    SUNSET,
+    NIGHT;
 
     public long getTime(){
         switch(this){
-            case Day: 
+            case DAY: 
                 return 16000;
-            case Night: 
+            case NIGHT: 
                 return 0;
-            case Sunrise:
+            case SUNRISE:
                 return 12000;
-            case Sunset: 
+            case SUNSET: 
                 return 220000;
             default:
                 return 0;

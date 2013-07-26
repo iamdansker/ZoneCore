@@ -16,8 +16,7 @@ public class PolygonTriggerBox extends TriggerBox{
     private PrecisePoint simpleCentroid = null;
     
     public PolygonTriggerBox(ArrayList<Location> polygon, String name) throws Exception{
-        super(name);
-        this.setWorld(polygon.get(0).getWorld().getName());
+        super(name,polygon.get(0).getWorld().getName());
         if(!isLocationsInSameWorld(polygon)){
             throw new Exception("Some locations are not in the same world");
         }
@@ -28,8 +27,7 @@ public class PolygonTriggerBox extends TriggerBox{
         this.setPolygon(polygon, true);
     }
     public PolygonTriggerBox(ArrayList<Location> polygon, String name, double minY, double maxY) throws Exception{
-        super(name);
-        this.setWorld(polygon.get(0).getWorld().getName());
+        super(name,polygon.get(0).getWorld().getName());
         if(!isLocationsInSameWorld(polygon)){
             throw new Exception("Some locations are not in the same world");
         }
@@ -107,7 +105,7 @@ public class PolygonTriggerBox extends TriggerBox{
     
     private boolean isLocationsInSameWorld(ArrayList<Location> polygon){
         for(Location location : polygon){
-            if(!location.getWorld().equals(getWorldName())){
+            if(!location.getWorld().getName().equals(getWorldName())){
                 return false;
             }
         }

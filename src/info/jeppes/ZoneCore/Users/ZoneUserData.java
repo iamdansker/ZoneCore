@@ -95,7 +95,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
     
     @Override
     public final void newUser() {
-        getUsersConfig().set(getName(), null);
+        config = ZoneUserManager.getUsersConfig().getConfigurationSection(getName());
         saveConfig();
     }
 
@@ -277,6 +277,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
             getConfig().set("playtimecheck", System.currentTimeMillis());
         }
     }
+    
     @Override
     public long getPlayTime() {
         return getConfig().getLong("playtime");

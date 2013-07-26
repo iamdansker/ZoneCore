@@ -49,15 +49,15 @@ public class ZoneTools {
     public static WorldTime getWorldTime(long time){
         long relativeTime = time % 24000;
         if (relativeTime > 12000) {
-            return WorldTime.Day;
+            return WorldTime.DAY;
         } else if ((relativeTime > 22200 || relativeTime < 13700)) {
-            return WorldTime.Night;
+            return WorldTime.NIGHT;
         } else if ((relativeTime < 12000 || relativeTime > 13700)) {
-            return WorldTime.Sunset;
+            return WorldTime.SUNSET;
         } else if (relativeTime < 22000) {
-            return WorldTime.Sunrise;
+            return WorldTime.SUNRISE;
         }
-        return WorldTime.Day;
+        return WorldTime.DAY;
     }
     
     public static byte yawToDirection(float yaw){

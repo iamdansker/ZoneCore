@@ -1136,12 +1136,22 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     }
     
     @Override
-    public boolean isScaledHealth() {
-        return player.isScaledHealth();
+    public boolean isHealthScaled() {
+        return player.isHealthScaled();
     }
 
     @Override
-    public void setScaleHealth(boolean bln) {
-        player.setScaleHealth(bln);
+    public void setHealthScaled(boolean bln) {
+        player.setHealthScaled(bln);
+    }
+
+    @Override
+    public void setHealthScale(double d) throws IllegalArgumentException {
+        player.setHealthScale(d);
+    }
+
+    @Override
+    public double getHealthScale() {
+        return player.getHealthScale();
     }
 }
