@@ -122,27 +122,33 @@ public class RoundTriggerBox extends TriggerBox{
     @Override
     public String toSaveString() {
         StringBuilder saveString = new StringBuilder();
+        saveString.append("circle|");
         saveString.append(super.toSaveString()).append("|");
         saveString.append(center.toSaveString()).append("|");
         saveString.append(radius).append(",").append(minY).append(",").append(maxY);
         return saveString.toString();
     }
     
-    public static RoundTriggerBox getRoundTriggerBox(String saveString){
+    public static RoundTriggerBox getRoundTriggerBox(String saveString) throws Exception{
         return getRoundTriggerBox(saveString,null);
     }
-    public static RoundTriggerBox getRoundTriggerBox(String saveString, TriggerBoxEventHandler eventHandler){
+    public static RoundTriggerBox getRoundTriggerBox(String saveString, TriggerBoxEventHandler eventHandler) throws Exception{
         String[] split = saveString.split("|");
+        
+        if(!"circle".equals(split[0])){
+            throw new Exception("TriggerBox is not a circle, it is a \""+split[0]+"\"");
+        }
+        
         //Base triggerbox parameters
-        String[] baseTriggerBoxString = split[0].split(",");
+        String[] baseTriggerBoxString = split[1].split(",");
         String name = baseTriggerBoxString[0];
         String worldName = baseTriggerBoxString[1];
         boolean useEvents = Boolean.parseBoolean(baseTriggerBoxString[2]);
         boolean triggerByEveryone = Boolean.parseBoolean(baseTriggerBoxString[3]);
         
-        Point3D center = Point3D.toPoint3D(split[1]);
+        Point3D center = Point3D.toPoint3D(split[2]);
         
-        String[] roundTriggerBoxString = split[2].split(",");
+        String[] roundTriggerBoxString = split[3].split(",");
         double radius = Double.parseDouble(roundTriggerBoxString[0]);
         double minY = Double.parseDouble(roundTriggerBoxString[1]);
         double maxY = Double.parseDouble(roundTriggerBoxString[2]);

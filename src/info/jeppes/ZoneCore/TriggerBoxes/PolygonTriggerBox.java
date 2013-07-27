@@ -232,6 +232,7 @@ public class PolygonTriggerBox extends TriggerBox{
     @Override
     public String toSaveString() {
         StringBuilder saveString = new StringBuilder();
+        saveString.append("polygon|");
         saveString.append(super.toSaveString()).append("|");
         boolean first = true;
         for(Point2D point : this.polygon){
@@ -247,24 +248,29 @@ public class PolygonTriggerBox extends TriggerBox{
         return saveString.toString();
     }
     
-    public static PolygonTriggerBox getPolygonTriggerBox(String saveString){
+    public static PolygonTriggerBox getPolygonTriggerBox(String saveString) throws Exception{
         return getPolygonTriggerBox(saveString,null);
     }
-    public static PolygonTriggerBox getPolygonTriggerBox(String saveString, TriggerBoxEventHandler eventHandler){
+    public static PolygonTriggerBox getPolygonTriggerBox(String saveString, TriggerBoxEventHandler eventHandler) throws Exception{
         String[] split = saveString.split("|");
+        
+        if(!"polygon".equals(split[0])){
+            throw new Exception("TriggerBox is not a polygon, it is a \""+split[0]+"\"");
+        }
+        
         //Base triggerbox parameters
-        String[] baseTriggerBoxString = split[0].split(",");
+        String[] baseTriggerBoxString = split[1].split(",");
         String name = baseTriggerBoxString[0];
         String worldName = baseTriggerBoxString[1];
         boolean useEvents = Boolean.parseBoolean(baseTriggerBoxString[2]);
         boolean triggerByEveryone = Boolean.parseBoolean(baseTriggerBoxString[3]);
         
         ArrayList<Point2D> polygon = new ArrayList();
-        for(String precisePointString : split[1].split("_")){
+        for(String precisePointString : split[2].split("_")){
             polygon.add(PrecisePoint.toPrecisePoint(precisePointString));
         }
         
-        String[] polygonTriggerBoxString = split[2].split(",");;
+        String[] polygonTriggerBoxString = split[3].split(",");;
         double minY = Double.parseDouble(polygonTriggerBoxString[0]);
         double maxY = Double.parseDouble(polygonTriggerBoxString[1]);
         
