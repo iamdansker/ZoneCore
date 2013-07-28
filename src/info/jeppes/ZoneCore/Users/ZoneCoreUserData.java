@@ -68,6 +68,7 @@ public class ZoneCoreUserData extends ZoneUserData implements ZoneCoreUser{
         return recommendationsHolder;
     }
     
+    @Override
     public ServerGroup getServerGroup(World world){
 //        try{
 //            String[] groups = de.bananaco.bpermissions.api.ApiLayer.getGroups(null, CalculableType.USER, null);
@@ -79,12 +80,14 @@ public class ZoneCoreUserData extends ZoneUserData implements ZoneCoreUser{
         return getServerGroup();
     }
     
+    @Override
     public ServerGroup getServerGroup(){
         String[] groups = de.bananaco.bpermissions.api.ApiLayer.getGroups(null, CalculableType.USER, this.getName());
         return ServerGroup.valueOf(groups[0]);
     }
     
     
+    @Override
     public void updatePlayTime() {
         if(getConfig().contains("playtimecheck")){
             long lastPlayTimeChecked = getConfig().getLong("playtimecheck");
@@ -94,7 +97,9 @@ public class ZoneCoreUserData extends ZoneUserData implements ZoneCoreUser{
     }
     
     
+    @Override
     public long getPlayTime() {
+        updatePlayTime();
         return getConfig().getLong("playtime");
     }
 }
