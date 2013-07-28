@@ -47,17 +47,7 @@ public class ZoneTools {
     }
     
     public static WorldTime getWorldTime(long time){
-        long relativeTime = time % 24000;
-        if (relativeTime > 12000) {
-            return WorldTime.DAY;
-        } else if ((relativeTime > 22200 || relativeTime < 13700)) {
-            return WorldTime.NIGHT;
-        } else if ((relativeTime < 12000 || relativeTime > 13700)) {
-            return WorldTime.SUNSET;
-        } else if (relativeTime < 22000) {
-            return WorldTime.SUNRISE;
-        }
-        return WorldTime.DAY;
+        return WorldTime.getWorldTime(time);
     }
     
     public static byte yawToDirection(float yaw){
