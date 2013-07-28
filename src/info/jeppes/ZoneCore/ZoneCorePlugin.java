@@ -6,6 +6,7 @@ package info.jeppes.ZoneCore;
 
 import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Commands.ZoneCommand;
+import info.jeppes.ZoneCore.Users.ZoneCoreUser;
 import info.jeppes.ZoneCore.Users.ZoneCoreUserManager;
 import java.io.File;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class ZoneCorePlugin extends ZonePlugin{
 
-    private ZoneCoreUserManager userManager;
+    private ZoneCoreUserManager<ZoneCoreUser> userManager;
     
     @Override
     public String[] preLoadConfig() {
@@ -104,7 +105,7 @@ public class ZoneCorePlugin extends ZonePlugin{
         super.onDisable();
     }
     
-    public ZoneCoreUserManager getUserManager() {
+    public ZoneCoreUserManager<ZoneCoreUser> getUserManager() {
         return userManager;
     }
     

@@ -8,6 +8,7 @@ import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Users.ZoneCoreUser;
 import info.jeppes.ZoneCore.Users.ZoneCoreUserManager;
 import info.jeppes.ZoneCore.Users.ZoneUser;
+import info.jeppes.ZoneCore.Users.ZoneUserManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,17 +55,17 @@ public class ZoneCore extends ZoneAPI{
         return plugin;
     }
     
-    public static ZoneCoreUserManager getUserManager(){
+    public static ZoneCoreUserManager<ZoneCoreUser> getUserManager(){
         return getCorePlugin().getUserManager();
     }
-    public static Map<String, ZoneUser> getUsers() {
+    public static Map<String, ZoneCoreUser> getUsers() {
         return getUserManager().getUsers();
     }
     public static ZoneCoreUser getUser(String userName){
-        return getUserManager().getZoneCoreUser(userName);
+        return getUserManager().getUser(userName);
     }
     public static ZoneCoreUser getUser(Player player){
-        return getUserManager().getZoneCoreUser(player);
+        return getUserManager().getUser(player);
     }
     
     public String getPluginDirectory(){

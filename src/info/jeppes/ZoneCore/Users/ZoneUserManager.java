@@ -26,8 +26,8 @@ import org.bukkit.plugin.Plugin;
  *
  * @author Jeppe
  */
-public class ZoneUserManager implements Listener{
-    private HashMap<String,ZoneUser> users = new HashMap<>();
+public class ZoneUserManager<E extends ZoneUser> implements Listener{
+    private HashMap<String,E> users = new HashMap<>();
     private final Plugin plugin;
     private boolean isZonePlugin;
     private ZoneConfig usersConfig;
@@ -59,13 +59,13 @@ public class ZoneUserManager implements Listener{
         }, saveInterval, saveInterval);
     }
     
-    public HashMap<String,ZoneUser> getUsers(){
+    public HashMap<String,E> getUsers(){
         return users;
     }
-    public ZoneUser getUser(String userName){
+    public E getUser(String userName){
         return getUsers().get(userName.toLowerCase());
     }
-    public ZoneUser getUser(Player player){
+    public E getUser(Player player){
         return getUsers().get(player.getName().toLowerCase());
     }
     public boolean containsPlayer(Player player){
@@ -73,6 +73,34 @@ public class ZoneUserManager implements Listener{
     }
     public boolean containsPlayer(String playerName){
         return getUsers().containsKey(playerName.toLowerCase());
+    }
+    
+    public E createNewZoneUser(Player player){
+        return createNewZoneUser(player.getName(),true);
+    }
+    public E createNewZoneUser(String playerName){
+        return createNewZoneUser(playerName,true);
+    }
+    public E createNewZoneUser(Player player, boolean addToUserList){
+        return createNewZoneUser(player.getName(),addToUserList);
+    }
+    public E createNewZoneUser(String playerName, boolean addToUserList){
+        E newUser = (E) new ZoneUserData(Bukkit.getPlayer(playerName), getUsersConfig().createSection(playerName));
+        if(addToUserList){
+            addUserToUserList(newUser);
+        }
+        return newUser;
+    }
+    public boolean addUserToUserList(E user){
+        if(!this.containsPlayer(user.getName())){
+            getUsers().put(user.getName().toLowerCase(), user);
+            getUsersConfig().schedualSave();
+
+            NewZoneUserEvent newZoneUserEvent = new NewZoneUserEvent(this,user);
+            Bukkit.getPluginManager().callEvent(newZoneUserEvent);
+            return true;
+        }
+        return false;
     }
     
     public ZoneConfig getUsersConfig(){
@@ -87,15 +115,30 @@ public class ZoneUserManager implements Listener{
         }
         Set<String> keys = usersConfig.getKeys(false);
         for(String userName : keys){
-            ConfigurationSection configurationSection = usersConfig.getConfigurationSection(userName);
-            ZoneUserData user = new ZoneUserData(userName,configurationSection);
+            E user = loadUser(userName);
             getUsers().put(userName.toLowerCase(), user);
         }
+        
         if(isZonePlugin){
             if(((ZonePlugin)plugin).inDebugMode()) {
                 ((ZonePlugin)plugin).getLogger().log(Level.INFO,"Loaded users");
             }
         }
+    }
+    public E loadUser(String userName){
+        ConfigurationSection config = usersConfig.getConfigurationSection(userName);
+        return loadUser(userName,config);
+    }
+    public E loadUser(String userName, ConfigurationSection config){
+        return (E)new ZoneUserData(userName,config);
+    }
+    
+    public boolean checkNewUser(Player player) {
+        if(!getUsers().containsKey(player.getName().toLowerCase())){
+            E newUser = createNewZoneUser(player, true);
+            return true;
+        }
+        return false;
     }
     
     @EventHandler(priority = EventPriority.NORMAL)
@@ -112,20 +155,6 @@ public class ZoneUserManager implements Listener{
                 user.giveLevelsWhenOnline();
             }
         }, 20);
-    }
-    
-    public boolean checkNewUser(Player player) {
-        if(!getUsers().containsKey(player.getName().toLowerCase())){
-            ZoneUserData newUser = new ZoneUserData(player, getUsersConfig().createSection(player.getName()));
-            getUsers().put(newUser.getName().toLowerCase(), newUser);
-            getUsersConfig().schedualSave();
-            
-            NewZoneUserEvent newZoneUserEvent = new NewZoneUserEvent(this,newUser);
-            Bukkit.getPluginManager().callEvent(newZoneUserEvent);
-            
-            return true;
-        }
-        return false;
     }
     
     @EventHandler(priority=EventPriority.NORMAL)

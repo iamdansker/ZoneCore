@@ -8,6 +8,7 @@ import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.util.HashMap;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -19,21 +20,29 @@ import org.bukkit.event.player.PlayerQuitEvent;
  *
  * @author jeppe
  */
-public class ZoneCoreUserManager extends ZoneUserManager{
+public class ZoneCoreUserManager <E extends ZoneCoreUser> extends ZoneUserManager<E>{
     public ZoneCoreUserManager(ZoneConfig usersConfig) {
         super(ZoneCore.getCorePlugin(),usersConfig);
     }
+
+    @Override
+    public E createNewZoneUser(String playerName, boolean addToUserList) {
+        E newUser = (E) new ZoneCoreUserData(Bukkit.getPlayer(playerName), getUsersConfig().createSection(playerName));
+        if(addToUserList){
+            addUserToUserList(newUser);
+        }
+        return newUser;
+    }
+
+    @Override
+    public E loadUser(String userName, ConfigurationSection config) {
+        return (E) new ZoneCoreUserData(userName,config);
+    }
     
-    public ZoneCoreUser getZoneCoreUser(Player player) {
-        return (ZoneCoreUser)getUser(player);
-    }
-    public ZoneCoreUser getZoneCoreUser(String playerName) {
-        return (ZoneCoreUser)getUser(playerName);
-    }
     @Override
     public void onPlayerQuit(PlayerQuitEvent event){
         Location location = event.getPlayer().getLocation();
-        ZoneCoreUser user = getZoneCoreUser(event.getPlayer());
+        ZoneCoreUser user = getUser(event.getPlayer());
         if(user != null){
             ConfigurationSection config = user.getConfig();
             config.set("lastleft", System.currentTimeMillis());
