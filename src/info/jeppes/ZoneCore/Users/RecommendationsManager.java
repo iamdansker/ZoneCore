@@ -4,14 +4,12 @@
  */
 package info.jeppes.ZoneCore.Users;
 
-import info.jeppes.ZoneCore.Users.ZoneUserData.ServerGroup;
+import info.jeppes.ZoneCore.Users.ZoneCoreUserData.ServerGroup;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 /**
  *
@@ -69,20 +67,17 @@ public class RecommendationsManager {
         ZoneCore.getCorePlugin().getConfig().set("lastKnownVoteseason",voteseason);
         ZoneCore.getCorePlugin().getConfig().save();
         for(ZoneUser user : ZoneCore.getUsers().values()){
-            user.getRecommendationsHolder().newseason(voteseason, oldseason);
+            ZoneCoreUser coreUser = (ZoneCoreUser)user;
+            coreUser.getRecommendationsHolder().newseason(voteseason, oldseason);
         }
-        ZoneUserManager.getUsersConfig().schedualSave();
-        Player[] onlinePlayers = Bukkit.getOnlinePlayers();
-        for(Player player : onlinePlayers){
-//            player.sendMessage(ChatColor.GREEN+"A new vote season has started! Expect the top voters to be announced on the website soon!");
-        }
+        ZoneCore.getUserManager().getUsersConfig().schedualSave();
     }
     
     public static long getVoteCooldown(){
         return voteCooldown;
     }
     
-    public static int getVotesPerVote(ZoneUser user){
+    public static int getVotesPerVote(ZoneCoreUser user){
         ServerGroup serverGroup = user.getServerGroup();
         if(serverGroup == null){
             return 1;

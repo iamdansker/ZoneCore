@@ -6,7 +6,7 @@ package info.jeppes.ZoneCore;
 
 import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Commands.ZoneCommand;
-import info.jeppes.ZoneCore.Users.ZoneUserManager;
+import info.jeppes.ZoneCore.Users.ZoneCoreUserManager;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +26,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class ZoneCorePlugin extends ZonePlugin{
 
-    private ZoneUserManager userManager;
+    private ZoneCoreUserManager userManager;
     
     @Override
     public String[] preLoadConfig() {
@@ -63,7 +63,7 @@ public class ZoneCorePlugin extends ZonePlugin{
 
     @Override
     public void loadConfig(ZoneConfig config) {
-        userManager = new ZoneUserManager(config);
+        userManager = new ZoneCoreUserManager(config);
     }
 
     @Override
@@ -99,12 +99,12 @@ public class ZoneCorePlugin extends ZonePlugin{
     public void onDisable() {
         AsynchroizedStorageManager.stop();
         AsynchroizedStorageManager.save();
-        ZoneUserManager.getUsersConfig().save();
-        ZoneUserManager.getUsers().clear();
+        getUserManager().getUsersConfig().save();
+        getUserManager().getUsers().clear();
         super.onDisable();
     }
     
-    public ZoneUserManager getUserManager() {
+    public ZoneCoreUserManager getUserManager() {
         return userManager;
     }
     

@@ -5,16 +5,15 @@
 package info.jeppes.ZoneCore;
 
 import info.jeppes.ZoneCore.Commands.DefaultCommand;
-import info.jeppes.ZoneCore.Commands.ZoneCommand;
+import info.jeppes.ZoneCore.Users.ZoneCoreUser;
+import info.jeppes.ZoneCore.Users.ZoneCoreUserManager;
 import info.jeppes.ZoneCore.Users.ZoneUser;
-import info.jeppes.ZoneCore.Users.ZoneUserManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -25,7 +24,6 @@ import org.bukkit.entity.Player;
  */
 public class ZoneCore extends ZoneAPI{
     private static HashMap<String,ZonePlugin> zonePlugins = new HashMap<>();
-    private static Server server = null;
     private static String mainDirectory = "plugins"+File.separator+"ZoneCore";
     private static String defaultCommandsPackageDirectory = "info.jeppes.ZoneCore.Commands.DefaultCommands";
     private static ZoneCorePlugin corePlugin = null;
@@ -39,7 +37,6 @@ public class ZoneCore extends ZoneAPI{
     
     public ZoneCore(ZonePlugin zonePlugin){
         plugin = zonePlugin;
-        server = zonePlugin.getServer();
         
         pluginDirectory = mainDirectory + File.separator + zonePlugin.getName();
         File pluginDir = new File(pluginDirectory);
@@ -57,17 +54,17 @@ public class ZoneCore extends ZoneAPI{
         return plugin;
     }
     
-    public static ZoneUserManager getUserManager(){
+    public static ZoneCoreUserManager getUserManager(){
         return getCorePlugin().getUserManager();
     }
     public static Map<String, ZoneUser> getUsers() {
-        return ZoneUserManager.getUsers();
+        return getUserManager().getUsers();
     }
-    public static ZoneUser getUser(String userName){
-        return ZoneUserManager.getUser(userName);
+    public static ZoneCoreUser getUser(String userName){
+        return getUserManager().getZoneCoreUser(userName);
     }
-    public static ZoneUser getUser(Player player){
-        return ZoneUserManager.getUser(player);
+    public static ZoneCoreUser getUser(Player player){
+        return getUserManager().getZoneCoreUser(player);
     }
     
     public String getPluginDirectory(){

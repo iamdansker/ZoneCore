@@ -4,7 +4,6 @@
  */
 package info.jeppes.ZoneCore.Users;
 
-import de.bananaco.bpermissions.api.CalculableType;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.util.ArrayList;
@@ -12,10 +11,8 @@ import java.util.HashMap;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -23,82 +20,18 @@ import org.bukkit.inventory.ItemStack;
  * @author Jeppe
  */
 public class ZoneUserData extends BukkitPlayerWrapper{
-
-    public enum ServerGroup {
-        Owner,
-        Admin,
-        SuperModArcane,
-        SuperModPremium,
-        SuperModArchitect,
-        SuperModElite,
-        SuperModSponsor,
-        SuperMod,
-        Mod,
-        Arcane,
-        Premium,
-        Architect,
-        Elite,
-        Sponsor,
-        Donator,
-        VIP,
-        Regular,
-        Basic;
-        
-        public boolean isStaff(){
-            switch(this){
-                case Owner: return true;
-                case Admin: return true;
-                case SuperModArcane: return true;
-                case SuperModPremium: return true;
-                case SuperModArchitect: return true;
-                case SuperModElite: return true;
-                case SuperModSponsor: return true;
-                case SuperMod: return true;
-                case Mod: return true;
-                default: return false;
-            }
-        }
-    }
     
     private ConfigurationSection config;
     private HashMap<String, Object> tempData = new HashMap<>();
-    private RecommendationsHolder recommendationsHolder;
-    public ZoneUserData(Player player, ConfigurationSection config){
-        super(player,player.getName());
-        this.config = config;
-        if(config == null){
-            newUser();
-        }
-        recommendationsHolder = new RecommendationsHolder(this,this.config);
+    
+    public ZoneUserData(Player player, ConfigurationSection configurationSection){
+        this(player.getName(),configurationSection);
     }
-
     public ZoneUserData(String userName, ConfigurationSection configurationSection) {
         super(Bukkit.getPlayer(userName),userName);
         this.config = configurationSection;
-        recommendationsHolder = new RecommendationsHolder(this,this.config);
-    }
-
-    @Override
-    public ServerGroup getServerGroup(World world){
-//        try{
-//            String[] groups = de.bananaco.bpermissions.api.ApiLayer.getGroups(null, CalculableType.USER, null);
-//            for(String groupName : groups){
-//                de.bananaco.bpermissions.api.ApiLayer.getValue(groupName, CalculableType.USER, groupName, groupName)
-//            }
-//            return ServerGroup.valueOf(group.getName());
-//        } catch(Exception e){}
-        return getServerGroup();
-    }
-    @Override
-    public ServerGroup getServerGroup(){
-        String[] groups = de.bananaco.bpermissions.api.ApiLayer.getGroups(null, CalculableType.USER, this.getName());
-        return ServerGroup.valueOf(groups[0]);
     }
     
-    @Override
-    public final void newUser() {
-        config = ZoneUserManager.getUsersConfig().createSection(getName());
-    }
 
     @Override
     public ConfigurationSection getConfig() {
@@ -112,13 +45,8 @@ public class ZoneUserData extends BukkitPlayerWrapper{
     }
 
     @Override
-    public ZoneConfig getUsersConfig() {
-        return ZoneUserManager.getUsersConfig();
-    }
-
-    @Override
-    public RecommendationsHolder getRecommendationsHolder() {
-        return recommendationsHolder;
+    public ZoneConfig getUsersConfig(){
+        return (ZoneConfig)config.getRoot();
     }
     
     @Override
@@ -248,39 +176,8 @@ public class ZoneUserData extends BukkitPlayerWrapper{
         }
     }
     
-    //Event methods
-    
-    @Override
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        this.setPlayer(event.getPlayer());
-        config.set("lastjoined", System.currentTimeMillis());
-        config.set("playtimecheck",System.currentTimeMillis());
-        ZoneUserManager.getUsersConfig().schedualSave();
-        Bukkit.getScheduler().runTaskLater(ZoneCore.getCorePlugin(), new Runnable(){
-            @Override
-            public void run() {
-                sendMesssagesWhenOnline();
-                giveItemsWhenOnline();
-                giveLevelsWhenOnline();
-            }
-        }, 20);
-    }
     @Override
     public void saveConfig(){
         this.getUsersConfig().schedualSave();
-    }
-    
-    @Override
-    public void updatePlayTime() {
-        if(getConfig().contains("playtimecheck")){
-            long lastPlayTimeChecked = getConfig().getLong("playtimecheck");
-            getConfig().set("playtime", getPlayTime() + (System.currentTimeMillis() - lastPlayTimeChecked));
-            getConfig().set("playtimecheck", System.currentTimeMillis());
-        }
-    }
-    
-    @Override
-    public long getPlayTime() {
-        return getConfig().getLong("playtime");
     }
 }

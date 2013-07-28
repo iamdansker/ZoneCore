@@ -17,11 +17,8 @@ import org.bukkit.inventory.ItemStack;
  * @author Jeppe
  */
 public interface ZoneUser extends Player{
-    public void newUser();
     public ConfigurationSection getConfig();
     public ZoneConfig getUsersConfig();
-    public ZoneUserData.ServerGroup getServerGroup(World world);
-    public ZoneUserData.ServerGroup getServerGroup();
     
     public void setAndSave(String key, Object obj);
     public HashMap<String,Object> getTempData();
@@ -32,10 +29,8 @@ public interface ZoneUser extends Player{
     public void setTempData(HashMap<String,Object> objList);
     public void clearTempData();
 
-    public RecommendationsHolder getRecommendationsHolder();
     public void setPlayer(Player player);
     
-    public void onPlayerJoin(PlayerJoinEvent event);
     public boolean sendMesssagesWhenOnline();
     public boolean giveItemsWhenOnline();
     public boolean giveLevelsWhenOnline();
@@ -44,7 +39,4 @@ public interface ZoneUser extends Player{
     public void giveItemWhenOnline(ItemStack itemStack);
     public void giveLevelsWhenOnline(int i);
     public void saveConfig();
-
-    public void updatePlayTime();
-    public long getPlayTime();
 }

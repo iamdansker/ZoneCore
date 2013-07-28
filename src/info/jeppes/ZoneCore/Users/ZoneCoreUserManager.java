@@ -7,10 +7,12 @@ package info.jeppes.ZoneCore.Users;
 import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
+import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
@@ -19,14 +21,19 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class ZoneCoreUserManager extends ZoneUserManager{
     public ZoneCoreUserManager(ZoneConfig usersConfig) {
-        super(usersConfig);
+        super(ZoneCore.getCorePlugin(),usersConfig);
     }
     
+    public ZoneCoreUser getZoneCoreUser(Player player) {
+        return (ZoneCoreUser)getUser(player);
+    }
+    public ZoneCoreUser getZoneCoreUser(String playerName) {
+        return (ZoneCoreUser)getUser(playerName);
+    }
     @Override
-    @EventHandler(priority=EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event){
         Location location = event.getPlayer().getLocation();
-        ZoneUser user = ZoneCore.getUser(event.getPlayer());
+        ZoneCoreUser user = getZoneCoreUser(event.getPlayer());
         if(user != null){
             ConfigurationSection config = user.getConfig();
             config.set("lastleft", System.currentTimeMillis());
@@ -39,6 +46,15 @@ public class ZoneCoreUserManager extends ZoneUserManager{
         }
     }
     
+    @Override
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        super.onPlayerJoin(event);
+        ZoneUser user = getUser(event.getPlayer());
+        user.getConfig().set("lastjoined", System.currentTimeMillis());
+        user.getConfig().set("playtimecheck",System.currentTimeMillis());
+        getUsersConfig().schedualSave();
+    }
+    @EventHandler
     public void onNewZoneUser(NewZoneUserEvent event){
         if(event.getZoneUserManager() == this){
             ZoneUser zoneUser = event.getZoneUser();

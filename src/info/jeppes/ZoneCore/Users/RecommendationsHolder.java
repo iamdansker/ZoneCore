@@ -27,11 +27,11 @@ public class RecommendationsHolder {
     private float recommendationsPerWebvote = 0.15f;
     private HashMap<String,Integer> recommendationsHistory;
     private HashMap<String,Integer> webVotesHistory ;
-    private final ZoneUser user;
+    private final ZoneCoreUser user;
     private final ConfigurationSection userConfig;
     private ArrayList<String> recommendedBy;
     
-    public RecommendationsHolder(ZoneUser user, ConfigurationSection userConfig){
+    public RecommendationsHolder(ZoneCoreUser user, ConfigurationSection userConfig){
         this.user = user;
         this.userConfig = userConfig;
         load();
@@ -97,7 +97,7 @@ public class RecommendationsHolder {
         return lastWebVote;
     }
     
-    public void canVoteFor(ZoneUser otherUser) throws AlreadyVotedException,RecommendCooldownException,RecommendStaffException{
+    public void canVoteFor(ZoneCoreUser otherUser) throws AlreadyVotedException,RecommendCooldownException,RecommendStaffException{
         if(recommendedBy.contains(otherUser.getName())){
             throw new AlreadyVotedException();
         } else {
@@ -114,7 +114,7 @@ public class RecommendationsHolder {
         }
     }
     
-    public void voteFor(ZoneUser otherUser) throws RecommendCooldownException, AlreadyVotedException, RecommendStaffException, StaffTempFixException{
+    public void voteFor(ZoneCoreUser otherUser) throws RecommendCooldownException, AlreadyVotedException, RecommendStaffException, StaffTempFixException{
         //Will throw an exception if the other user cannot vote for this user
         canVoteFor(otherUser); 
         int votesPerVote = RecommendationsManager.getVotesPerVote(otherUser);
