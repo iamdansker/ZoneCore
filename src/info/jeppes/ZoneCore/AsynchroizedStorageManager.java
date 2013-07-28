@@ -6,8 +6,6 @@
 package info.jeppes.ZoneCore;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Author: Jeppe Boysen Vennekilde
