@@ -91,7 +91,7 @@ public class ZoneCoreUserData extends ZoneUserData implements ZoneCoreUser{
     public void updatePlayTime() {
         if(getConfig().contains("playtimecheck")){
             long lastPlayTimeChecked = getConfig().getLong("playtimecheck");
-            getConfig().set("playtime", getPlayTime() + (System.currentTimeMillis() - lastPlayTimeChecked));
+            getConfig().set("playtime", getPlayTime(false) + (System.currentTimeMillis() - lastPlayTimeChecked));
             getConfig().set("playtimecheck", System.currentTimeMillis());
         }
     }
@@ -99,7 +99,14 @@ public class ZoneCoreUserData extends ZoneUserData implements ZoneCoreUser{
     
     @Override
     public long getPlayTime() {
-        updatePlayTime();
+        return getPlayTime(true);
+    }
+    
+    @Override
+    public long getPlayTime(boolean update) {
+        if(update) {
+            updatePlayTime();
+        }
         return getConfig().getLong("playtime");
     }
 }
