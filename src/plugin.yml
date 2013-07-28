@@ -1,5 +1,5 @@
 name: ZoneCore
-version: 1.0
+version: 1.1
 author: iamdansker
 main: info.jeppes.ZoneCore.ZoneCorePlugin
 load: STARTUP
