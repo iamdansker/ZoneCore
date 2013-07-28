@@ -359,11 +359,14 @@ public class ZoneTools {
      */
     public static String getTimeDDHHMMSSStringShort(long time){
         int[] timeDDHHMMSS = getTimeDDHHMMSS(time);
-        return 
-                (timeDDHHMMSS[0] != 0 ? (timeDDHHMMSS[0] + " day"+ (timeDDHHMMSS[0] == 1 ? " " : "s ")) : "") + 
+        String timeString = (timeDDHHMMSS[0] != 0 ? (timeDDHHMMSS[0] + " day"+ (timeDDHHMMSS[0] == 1 ? " " : "s ")) : "") + 
                 (timeDDHHMMSS[0] != 0 && timeDDHHMMSS[1] != 0 ? (timeDDHHMMSS[1] + " hour"+ (timeDDHHMMSS[1] == 1 ? " " : "s "))+"and " : "") + 
                 (timeDDHHMMSS[0] != 0 && timeDDHHMMSS[1] != 0 && timeDDHHMMSS[2] != 0 ? (timeDDHHMMSS[2] + " minute"+ (timeDDHHMMSS[2] == 1 ? " " : "s ")) : "") + 
                 (timeDDHHMMSS[3] != 0 ? (timeDDHHMMSS[3] + " second"+ (timeDDHHMMSS[3] == 1 ? " " : "s ")) : "");
+        if(timeString.isEmpty()){
+            return "0 seconds";
+        } 
+        return timeString;
     }
     /**
      * returns the time as a String, example: 1 hour 53 minutes and 32 seconds
@@ -387,10 +390,14 @@ public class ZoneTools {
         boolean useHours = timeDDHHMMSS[1] != 0;
         boolean useMinuts = timeDDHHMMSS[2] != 0;
         boolean useSeconds = timeDDHHMMSS[3] != 0;
-        return  (useHours ? (timeDDHHMMSS[1] + " hour"+ (timeDDHHMMSS[1] == 1 ? " " : "s ")): "") + 
+        String timeString = (useHours ? (timeDDHHMMSS[1] + " hour"+ (timeDDHHMMSS[1] == 1 ? " " : "s ")): "") + 
                 (useMinuts ? (timeDDHHMMSS[2] + " minute"+ (timeDDHHMMSS[2] == 1 ? " " : "s ")): "") + 
                 ((useHours || useMinuts) && useSeconds ? "and " : "")+
                 (useSeconds ? (timeDDHHMMSS[3] +" second" + (timeDDHHMMSS[3] == 1 ? "" : "s")) : "");
+        if(timeString.isEmpty()){
+            return "0 seconds";
+        } 
+        return timeString;
     }
 
     public static String getSimpleLocationInfo(Location location){
@@ -401,7 +408,7 @@ public class ZoneTools {
                     ","+location.getZ()+
                     "} Direction: "+yawToDirection(location.getYaw());
         }
-        return "";
+        return null;
     }
     
     
