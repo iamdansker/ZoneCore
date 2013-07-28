@@ -36,9 +36,9 @@ import org.bukkit.Location;
  */
 public class Point3D {
     
-    private double x;
-    private double y;
-    private double z;
+    public double x;
+    public double y;
+    public double z;
     
     public Point3D(){
         x = 0;
