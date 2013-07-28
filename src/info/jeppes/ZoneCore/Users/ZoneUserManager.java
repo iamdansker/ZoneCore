@@ -85,7 +85,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         return createNewZoneUser(player.getName(),addToUserList);
     }
     public E createNewZoneUser(String playerName, boolean addToUserList){
-        E newUser = (E) new ZoneUserData(Bukkit.getPlayer(playerName), getUsersConfig().createSection(playerName));
+        E newUser = loadUser(Bukkit.getPlayer(playerName), getUsersConfig().createSection(playerName));
         if(addToUserList){
             addUserToUserList(newUser);
         }
@@ -125,9 +125,15 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
             }
         }
     }
+    public E loadUser(Player player){
+        return loadUser(player.getName());
+    }
     public E loadUser(String userName){
         ConfigurationSection config = usersConfig.getConfigurationSection(userName);
         return loadUser(userName,config);
+    }
+    public E loadUser(Player player, ConfigurationSection config){
+        return loadUser(player.getName(),config);
     }
     public E loadUser(String userName, ConfigurationSection config){
         return (E)new ZoneUserData(userName,config);

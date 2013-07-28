@@ -25,15 +25,6 @@ public class ZoneCoreUserManager <E extends ZoneCoreUser> extends ZoneUserManage
     }
 
     @Override
-    public E createNewZoneUser(String playerName, boolean addToUserList) {
-        E newUser = (E) new ZoneCoreUserData(Bukkit.getPlayer(playerName), getUsersConfig().createSection(playerName));
-        if(addToUserList){
-            addUserToUserList(newUser);
-        }
-        return newUser;
-    }
-
-    @Override
     public E loadUser(String userName, ConfigurationSection config) {
         return (E) new ZoneCoreUserData(userName,config);
     }
