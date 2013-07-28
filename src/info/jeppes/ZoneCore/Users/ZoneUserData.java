@@ -32,6 +32,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
         SuperModArchitect,
         SuperModElite,
         SuperModSponsor,
+        SuperMod,
         Mod,
         Arcane,
         Premium,
@@ -52,6 +53,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
                 case SuperModArchitect: return true;
                 case SuperModElite: return true;
                 case SuperModSponsor: return true;
+                case SuperMod: return true;
                 case Mod: return true;
                 default: return false;
             }
@@ -95,8 +97,7 @@ public class ZoneUserData extends BukkitPlayerWrapper{
     
     @Override
     public final void newUser() {
-        config = ZoneUserManager.getUsersConfig().getConfigurationSection(getName());
-        saveConfig();
+        config = ZoneUserManager.getUsersConfig().createSection(getName());
     }
 
     @Override
