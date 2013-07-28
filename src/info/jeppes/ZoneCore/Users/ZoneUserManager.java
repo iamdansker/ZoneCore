@@ -92,7 +92,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         return newUser;
     }
     public boolean addUserToUserList(E user){
-        if(!this.containsPlayer(user.getName())){
+        if(!containsPlayer(user.getName())){
             getUsers().put(user.getName().toLowerCase(), user);
             getUsersConfig().schedualSave();
 

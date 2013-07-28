@@ -7,12 +7,11 @@ package info.jeppes.ZoneCore.Users;
 import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
-import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -20,7 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  *
  * @author jeppe
  */
-public class ZoneCoreUserManager <E extends ZoneCoreUser> extends ZoneUserManager<E>{
+public class ZoneCoreUserManager <E extends ZoneCoreUser> extends ZoneUserManager<E> implements Listener{
     public ZoneCoreUserManager(ZoneConfig usersConfig) {
         super(ZoneCore.getCorePlugin(),usersConfig);
     }
@@ -56,6 +55,7 @@ public class ZoneCoreUserManager <E extends ZoneCoreUser> extends ZoneUserManage
     }
     
     @Override
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         super.onPlayerJoin(event);
         ZoneUser user = getUser(event.getPlayer());
@@ -67,7 +67,7 @@ public class ZoneCoreUserManager <E extends ZoneCoreUser> extends ZoneUserManage
     public void onNewZoneUser(NewZoneUserEvent event){
         if(event.getZoneUserManager() == this){
             ZoneUser zoneUser = event.getZoneUser();
-            zoneUser.getConfig().set(zoneUser.getName()+".lastjoined", System.currentTimeMillis());
+            zoneUser.getConfig().set("lastjoined", System.currentTimeMillis());
             zoneUser.getConfig().set("playtime",0);
             zoneUser.getConfig().set("playtimecheck",System.currentTimeMillis());
             zoneUser.saveConfig();
