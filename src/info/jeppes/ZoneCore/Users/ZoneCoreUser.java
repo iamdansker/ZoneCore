@@ -19,4 +19,5 @@ public interface ZoneCoreUser extends ZoneUser{
     
     public void updatePlayTime();
     public long getPlayTime();
+    public long getPlayTime(boolean update);
 }
