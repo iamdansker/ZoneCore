@@ -359,10 +359,15 @@ public class ZoneTools {
      */
     public static String getTimeDDHHMMSSStringShort(long time){
         int[] timeDDHHMMSS = getTimeDDHHMMSS(time);
-        String timeString = (timeDDHHMMSS[0] != 0 ? (timeDDHHMMSS[0] + " day"+ (timeDDHHMMSS[0] == 1 ? " " : "s ")) : "") + 
-                (timeDDHHMMSS[0] != 0 && timeDDHHMMSS[1] != 0 ? (timeDDHHMMSS[1] + " hour"+ (timeDDHHMMSS[1] == 1 ? " " : "s "))+"and " : "") + 
-                (timeDDHHMMSS[0] != 0 && timeDDHHMMSS[1] != 0 && timeDDHHMMSS[2] != 0 ? (timeDDHHMMSS[2] + " minute"+ (timeDDHHMMSS[2] == 1 ? " " : "s ")) : "") + 
-                (timeDDHHMMSS[3] != 0 ? (timeDDHHMMSS[3] + " second"+ (timeDDHHMMSS[3] == 1 ? " " : "s ")) : "");
+        boolean useDays = timeDDHHMMSS[0] != 0;
+        boolean useHours = timeDDHHMMSS[1] != 0;
+        boolean useMinuts = timeDDHHMMSS[2] != 0;
+        boolean useSeconds = timeDDHHMMSS[3] != 0;
+        String timeString = (useDays ? (timeDDHHMMSS[0] + " day"+ (timeDDHHMMSS[0] == 1 ? " " : "s ")): "") + 
+                (useHours ? (timeDDHHMMSS[1] + " hour"+ (timeDDHHMMSS[1] == 1 ? " " : "s ")): "") + 
+                (useMinuts ? (timeDDHHMMSS[2] + " minute"+ (timeDDHHMMSS[2] == 1 ? " " : "s ")): "") + 
+                ((useDays || useHours || useMinuts) && useSeconds ? "and " : "")+
+                (useSeconds ? (timeDDHHMMSS[3] +" second" + (timeDDHHMMSS[3] == 1 ? "" : "s")) : "");
         if(timeString.isEmpty()){
             return "0 seconds";
         } 
