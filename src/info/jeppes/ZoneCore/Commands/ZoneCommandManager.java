@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.SimplePluginManager;
@@ -99,7 +98,7 @@ public class ZoneCommandManager {
         ZoneConfig config = ZoneCore.getCorePlugin().getConfig();
         if(config.contains("injectCommands")){
             injectCommands = config.getBoolean("injectCommands");
-        }   
+        }
         if(injectCommands){
             CommandMap commandMap = null;
 

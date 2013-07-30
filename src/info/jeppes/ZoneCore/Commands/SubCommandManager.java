@@ -80,10 +80,20 @@ public class SubCommandManager extends Command implements CommandExecutor{
         return commands;
     }
     
+    public boolean containsCommandClass(Class<ZoneCommand> commandClass){
+        for(ZoneCommand command : commands){
+            if(command.getClass() == commandClass){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public boolean addCommand(ZoneCommand command) {
-        if(commands.contains(command)){
+        if(commands.contains(command) || containsCommandClass((Class<ZoneCommand>)command.getClass())){
             return false;
         }
+        
         commands.add(command);
         if(command.isPrimaryCommand(this.getName())){
             primaryCommand = command;
