@@ -4,14 +4,14 @@
 injectCommands: false
 SQL:
     #URL for the database
-    username: "url"
+    url: "url"
     #URL for the database (1433 standard SQL port)
     port: 1433
     #Could be mysql, postgresql, nosql and so on.
-    username: "RDBMS"
+    RDBMS: "RDBMS"
     #Database name
-    username: "database"
+    database: "database"
     #Username used to login to the SQL database
     username: "username"
     #Password used to login to the SQL database
-    username: "password"
+    password: "password"
