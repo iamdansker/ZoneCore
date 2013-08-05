@@ -1154,4 +1154,28 @@ public abstract class BukkitPlayerWrapper implements ZoneUser{
     public double getHealthScale() {
         return player.getHealthScale();
     }
+    
+    @Override
+    public void playSound(Location lctn, String string, float f, float f1)
+    {
+        player.playSound(lctn, Sound.BURP, f, f1);
+    }
+
+    @Override
+    public boolean isLeashed()
+    {
+        return player.isLeashed();
+    }
+
+    @Override
+    public Entity getLeashHolder() throws IllegalStateException
+    {
+        return player.getLeashHolder();
+    }
+
+    @Override
+    public boolean setLeashHolder(Entity entity)
+    {
+        return player.setLeashHolder(entity);
+    }
 }

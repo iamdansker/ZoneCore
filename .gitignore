@@ -20,3 +20,4 @@
 
 # Mac filesystem dust
 /.DS_Store
+/ZoneCore/nbproject/private/
