@@ -4,7 +4,6 @@
  */
 package info.jeppes.ZoneCore.Users;
 
-import de.bananaco.bpermissions.api.CalculableType;
 import org.bukkit.World;
 
 /**
@@ -13,7 +12,6 @@ import org.bukkit.World;
  */
 public interface ZoneCoreUser extends ZoneUser{
     
-    public RecommendationsHolder getRecommendationsHolder();
     public ZoneCoreUserData.ServerGroup getServerGroup(World world);
     public ZoneCoreUserData.ServerGroup getServerGroup();
     

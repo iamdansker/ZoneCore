@@ -42,12 +42,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
             this.isZonePlugin = false;
         }
         
-        RecommendationsManager recommendationsManager = new RecommendationsManager();
         loadUsers(usersConfig);
-        
-        if(recommendationsManager.seasonChangeWaiting()){
-            recommendationsManager.newVoteseason();
-        }
         
         Bukkit.getPluginManager().registerEvents(this, plugin);
         

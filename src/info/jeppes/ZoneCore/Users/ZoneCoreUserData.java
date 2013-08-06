@@ -51,21 +51,12 @@ public class ZoneCoreUserData extends ZoneUserData implements ZoneCoreUser{
         }
     }
     
-    private RecommendationsHolder recommendationsHolder;
     
     public ZoneCoreUserData(Player player, ConfigurationSection configurationSection) {
         super(player, configurationSection);
-        recommendationsHolder = new RecommendationsHolder(this,getConfig());
     }
     public ZoneCoreUserData(String userName, ConfigurationSection configurationSection) {
         super(userName, configurationSection);
-        recommendationsHolder = new RecommendationsHolder(this,getConfig());
-    }
-    
-    
-    @Override
-    public RecommendationsHolder getRecommendationsHolder() {
-        return recommendationsHolder;
     }
     
     @Override
