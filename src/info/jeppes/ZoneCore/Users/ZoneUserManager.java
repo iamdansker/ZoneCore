@@ -80,7 +80,13 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         return createNewZoneUser(player.getName(),addToUserList);
     }
     public E createNewZoneUser(String playerName, boolean addToUserList){
-        E newUser = loadUser(Bukkit.getPlayer(playerName), getUsersConfig().createSection(playerName));
+        Player player = Bukkit.getPlayer(playerName);
+        E newUser;
+        if(player != null){
+            newUser = loadUser(Bukkit.getPlayer(playerName), getUsersConfig().createSection(playerName));
+        } else {
+            newUser = loadUser(playerName, getUsersConfig().createSection(playerName));
+        }
         if(addToUserList){
             addUserToUserList(newUser);
         }
