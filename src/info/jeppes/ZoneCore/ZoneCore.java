@@ -7,8 +7,6 @@ package info.jeppes.ZoneCore;
 import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Users.ZoneCoreUser;
 import info.jeppes.ZoneCore.Users.ZoneCoreUserManager;
-import info.jeppes.ZoneCore.Users.ZoneUser;
-import info.jeppes.ZoneCore.Users.ZoneUserManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
