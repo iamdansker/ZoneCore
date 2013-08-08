@@ -5,6 +5,11 @@
 package info.jeppes.ZoneCore;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -307,6 +312,40 @@ public class ZoneTools {
         }
         return size;
     }
+    
+	public static void copyFolder(File srcFolderPath, File destFolderPath)
+			throws IOException {
+		if (!srcFolderPath.isDirectory()) {
+			// If it is a File the Just copy It to the new Folder
+			InputStream in = new FileInputStream(srcFolderPath);
+			OutputStream out = new FileOutputStream(destFolderPath);
+
+			byte[] buffer = new byte[1024];
+
+			int length;
+
+			while ((length = in.read(buffer)) > 0) {
+				out.write(buffer, 0, length);
+			}
+			in.close();
+			out.close();
+		} else {
+			// if it is a directory create the directory inside the new destination directory and
+			// list the contents...
+			if (!destFolderPath.exists()) {
+				destFolderPath.mkdir();
+				System.out.println("Directory copied from " + srcFolderPath
+						+ "  to " + destFolderPath + " successfully");
+			}
+			String folder_contents[] = srcFolderPath.list();
+			for (String file : folder_contents) {
+				File srcFile = new File(srcFolderPath, file);
+				File destFile = new File(destFolderPath, file);
+
+				copyFolder(srcFile, destFile);
+			}
+		}
+	}
     
     public static String formateNumberToString(double value) {
         return formateNumberToString(value,2,BigDecimal.ROUND_DOWN);
