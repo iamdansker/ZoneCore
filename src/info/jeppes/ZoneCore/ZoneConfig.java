@@ -32,8 +32,9 @@ public class ZoneConfig extends AsynchronizedYamlConfiguration{
         this.name = file.getName();
         if(!file.exists()){
             try {
-                
-//                new File(file.getPath()).mkdirs();
+                //Create directory if doesn't exist
+                new File(file.getPath()).mkdirs();
+                //create file
                 file.createNewFile();
             } catch (IOException ex) {
                 Logger.getLogger(ZoneConfig.class.getName()).log(Level.SEVERE, null, ex);
