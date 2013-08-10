@@ -95,8 +95,8 @@ public class Point3D {
     public static String toSaveString(Point3D point){
         return toSaveString(point.getX(),point.getY(),point.getZ());
     }
-    public static String toSaveString(double x, double z, double y){
-        return x+","+z+","+y;
+    public static String toSaveString(double x, double y, double z){
+        return x+","+y+","+z;
     }
     
     public static Point3D toPoint3D(String saveString){
