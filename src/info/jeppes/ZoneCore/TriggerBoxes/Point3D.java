@@ -1,8 +1,5 @@
 package info.jeppes.ZoneCore.TriggerBoxes;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.geom.Point2D;
 import org.bukkit.Location;
 
 /**
@@ -96,7 +93,7 @@ public class Point3D {
     }
     
     public static String toSaveString(Point3D point){
-        return toSaveString(point.getX(),point.getZ(),point.getY());
+        return toSaveString(point.getX(),point.getY(),point.getZ());
     }
     public static String toSaveString(double x, double z, double y){
         return x+","+z+","+y;
