@@ -9,7 +9,7 @@ import info.jeppes.ZoneWorld.ZoneWorldAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 import org.bukkit.util.Vector;
 
 /**
