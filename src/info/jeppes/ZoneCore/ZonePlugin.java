@@ -321,7 +321,9 @@ public abstract class ZonePlugin extends JavaPlugin{
 			for (String clazz : classes) {
                 try{
                     classList.add(Class.forName(clazz));
-                }catch(Exception e){
+                }catch(ClassNotFoundException err){
+                    //In case some class doesn't load, it shouldn't shut down the entire plugin
+                } catch(Exception ex){
                     //In case some class doesn't load, it shouldn't shut down the entire plugin
                 }
 			}
