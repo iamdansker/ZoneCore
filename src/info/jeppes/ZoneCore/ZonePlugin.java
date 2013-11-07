@@ -319,7 +319,11 @@ public abstract class ZonePlugin extends JavaPlugin{
 			}
 			ArrayList<Class> classList = new ArrayList<>();
 			for (String clazz : classes) {
-				classList.add(Class.forName(clazz));
+                try{
+                    classList.add(Class.forName(clazz));
+                }catch(Exception e){
+                    //In case some class doesn't load, it shouldn't shut down the entire plugin
+                }
 			}
 			return classList.toArray(new Class[classes.size()]);
 		} catch (Exception e) {
