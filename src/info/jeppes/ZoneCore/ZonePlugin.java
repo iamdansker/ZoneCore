@@ -320,7 +320,10 @@ public abstract class ZonePlugin extends JavaPlugin{
 			ArrayList<Class> classList = new ArrayList<>();
 			for (String clazz : classes) {
                 try{
-                    classList.add(Class.forName(clazz));
+                    Class<?> c = Class.forName(clazz);
+                    if(c != null){
+                        classList.add(c);
+                    }
                 }catch(ClassNotFoundException | NoClassDefFoundError err){
                     //In case some class doesn't load, it shouldn't shut down the entire plugin
                 }
