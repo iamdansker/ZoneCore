@@ -8,6 +8,7 @@ import info.jeppes.ZoneCore.ZoneCore;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -15,6 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  *
@@ -41,7 +44,19 @@ public abstract class ZoneInventory implements ZoneInventoryInterface, Listener{
     @EventHandler(priority = EventPriority.NORMAL)
     public void onInventoryClickImpl(InventoryClickEvent event){
         if(getInventory().getViewers().contains(event.getWhoClicked())){
-            event.setCancelled(true);
+            if(!canEdit()){
+                event.setResult(Event.Result.DENY);
+                if(event.getWhoClicked() instanceof Player){
+                    final Player player = (Player)event.getWhoClicked();
+                    Bukkit.getScheduler().runTaskLater(ZoneCore.getCorePlugin(),new Runnable(){
+                        @Override
+                        public void run() {
+                            player.setItemInHand(player.getItemInHand());
+                            player.updateInventory();
+                        }
+                    },1);
+                }
+            }
             onInventoryClick(event);
         }
     }
@@ -52,7 +67,7 @@ public abstract class ZoneInventory implements ZoneInventoryInterface, Listener{
         }
     }
 
-    public boolean isCanEdit() {
+    public boolean canEdit() {
         return canEdit;
     }
 
@@ -60,9 +75,10 @@ public abstract class ZoneInventory implements ZoneInventoryInterface, Listener{
         this.canEdit = canEdit;
     }
     
+    @Override
     public Inventory open(HumanEntity player){
         player.openInventory(this.getInventory());
-        getInventory().getViewers().add(player);
+//        getInventory().getViewers().add(player);
         return getInventory();
     }
     public void close(HumanEntity player) {

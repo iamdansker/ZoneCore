@@ -10,9 +10,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.server.v1_6_R3.NBTTagCompound;
+import net.minecraft.server.v1_6_R3.NBTTagList;
+import net.minecraft.server.v1_6_R3.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -21,6 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
@@ -257,6 +262,22 @@ public class ZoneTools {
                 return 2;
         }
         return 0;
+    }
+    
+    public static ItemStack addGlow(org.bukkit.inventory.ItemStack stack) {
+        net.minecraft.server.v1_6_R3.ItemStack nmsStack = (net.minecraft.server.v1_6_R3.ItemStack) CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound compound = nmsStack.tag;
+        
+        // Initialize the compound if we need to
+        if (compound == null) {
+            compound = new NBTTagCompound();
+            nmsStack.tag = compound;
+        }
+        // Empty enchanting compound
+        NBTTagList nbtTagList = new NBTTagList();
+        compound.set("ench", nbtTagList);
+        nmsStack.save(compound);
+        return CraftItemStack.asCraftMirror(nmsStack);
     }
     
     public static boolean isPlayer(CommandSender cs){
