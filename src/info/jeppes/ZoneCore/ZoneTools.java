@@ -221,6 +221,20 @@ public class ZoneTools {
         return newString.toString();
     }
     
+    public static String getOrdinalStringEnding(long number){
+        int lastDigit = (int) (number % 10);
+        switch(lastDigit){
+            case 1: 
+                return "st";
+            case 2: 
+                return "nd";
+            case 3: 
+                return "rd";
+            default: 
+                return "th";
+        }
+    }
+    
     public static Material getMaterialFromString(String arg){
         try{
             int id = Integer.parseInt(arg);
