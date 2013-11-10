@@ -181,7 +181,7 @@ public class ZoneTools {
             }
             String colorString = colorSegment.substring(0,1);
             ChatColor color = ChatColor.getByChar(colorString);
-            String rest = colorString.substring(1);
+            String rest = colorSegment.substring(1);
             newString.append(color.toString()).append(rest);
         }
         return newString.toString();
