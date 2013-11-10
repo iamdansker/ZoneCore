@@ -1,6 +1,7 @@
 package info.jeppes.ZoneCore.TriggerBoxes;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 
 /**
  * Author: Jeppe Boysen Vennekilde
@@ -83,6 +84,10 @@ public class Point3D {
         setZ(z);
     }
 
+    public Location toLocation(World world){
+        return new Location(world,getX(),getY(),getZ());
+    }
+    
     @Override
     public String toString(){
         return this.getClass().getName()+"[x="+x+",z="+z+",y="+y+"]";
