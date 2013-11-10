@@ -169,6 +169,40 @@ public class ZoneTools {
         return blocks;
     }
     
+    public static String[] getComplexArgs(String[] args){
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean first = true;
+        for(String str : args){
+            if(first){
+                first = false;
+                stringBuilder.append(str);
+                continue;
+            }
+            stringBuilder.append(" ").append(str);
+        }
+        return getComplexArgs(stringBuilder.toString());
+    }
+    public static String[] getComplexArgs(String args){
+        ArrayList<String> newArgs = new ArrayList();
+        String[] split = args.split("\"");
+        boolean combine = true;
+        for(String str : split){
+            if(combine = !combine){
+                newArgs.add(str);
+                continue;
+            }
+            String[] splitSpace = str.split(" ");
+            for(String strSpace : splitSpace){
+                if(strSpace.isEmpty()){
+                    continue;
+                }
+                newArgs.add(strSpace);
+            }
+        }
+        return  newArgs.toArray(new String[0]);
+    }
+    
+    
     public static String parseColorCodes(String originalString){
         StringBuilder newString = new StringBuilder();
         String[] split = originalString.split("&");
