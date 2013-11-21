@@ -28,7 +28,7 @@ import org.bukkit.plugin.Plugin;
  * @author Jeppe
  */
 public class ZoneUserManager<E extends ZoneUser> implements Listener{
-    private HashMap<String,WeakReference<E>> users = new HashMap<>();
+    private HashMap<String,WeakReference<E>> users = new HashMap();
     private final Plugin plugin;
     private boolean isZonePlugin;
     private ZoneConfig usersConfig;
@@ -70,7 +70,9 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
             if(reference != null){
                 E user = reference.get();
                 if(user == null){
-                    this.loadUser(userName);
+                    user = this.loadUser(userName);
+                    reference = new WeakReference(user);
+                    getUsers().put(key, reference);
                 }
                 return user;
             }
