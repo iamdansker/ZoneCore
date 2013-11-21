@@ -8,6 +8,7 @@ import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Users.ZoneCoreUser;
 import info.jeppes.ZoneCore.Users.ZoneCoreUserManager;
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,7 @@ public class ZoneCore extends ZoneAPI{
     public static ZoneCoreUserManager<ZoneCoreUser> getUserManager(){
         return getCorePlugin().getUserManager();
     }
-    public static Map<String, ZoneCoreUser> getUsers() {
+    public static Map<String, WeakReference<ZoneCoreUser>> getUsers() {
         return getUserManager().getUsers();
     }
     public static ZoneCoreUser getUser(String userName){

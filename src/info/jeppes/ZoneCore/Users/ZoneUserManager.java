@@ -8,6 +8,7 @@ import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import info.jeppes.ZoneCore.ZonePlugin;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
@@ -27,7 +28,7 @@ import org.bukkit.plugin.Plugin;
  * @author Jeppe
  */
 public class ZoneUserManager<E extends ZoneUser> implements Listener{
-    private HashMap<String,E> users = new HashMap<>();
+    private HashMap<String,WeakReference<E>> users = new HashMap<>();
     private final Plugin plugin;
     private boolean isZonePlugin;
     private ZoneConfig usersConfig;
@@ -54,15 +55,29 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         }, saveInterval, saveInterval);
     }
     
-    public HashMap<String,E> getUsers(){
+    public HashMap<String,WeakReference<E>> getUsers(){
         return users;
     }
-    public E getUser(String userName){
-        return getUsers().get(userName.toLowerCase());
-    }
+    
     public E getUser(Player player){
-        return getUsers().get(player.getName().toLowerCase());
+        return getUser(player.getName());
     }
+    public E getUser(String userName){
+        HashMap<String, WeakReference<E>> usersTemp = getUsers();
+        String key = userName.toLowerCase();
+        if(usersTemp.containsKey(key)){
+            WeakReference<E> reference = usersTemp.get(key);
+            if(reference != null){
+                E user = reference.get();
+                if(user == null){
+                    this.loadUser(userName);
+                }
+                return user;
+            }
+        }
+        return null;
+    }
+    
     public boolean containsPlayer(Player player){
         return containsPlayer(player);
     }
@@ -94,7 +109,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     }
     public boolean addUserToUserList(E user){
         if(!containsPlayer(user.getName())){
-            getUsers().put(user.getName().toLowerCase(), user);
+            getUsers().put(user.getName().toLowerCase(), new WeakReference(user));
             getUsersConfig().schedualSave();
 
             NewZoneUserEvent newZoneUserEvent = new NewZoneUserEvent(this,user);
@@ -117,7 +132,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         Set<String> keys = usersConfig.getKeys(false);
         for(String userName : keys){
             E user = loadUser(userName);
-            getUsers().put(userName.toLowerCase(), user);
+            getUsers().put(userName.toLowerCase(), new WeakReference(user));
         }
         
         if(isZonePlugin){
