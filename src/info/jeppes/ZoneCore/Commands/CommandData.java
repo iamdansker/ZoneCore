@@ -150,6 +150,10 @@ public abstract class CommandData implements ZoneCommand{
     }
     
     @Override
+    public Player getPlayer(CommandSender cs){
+        return toPlayerObject(cs);
+    }
+    @Override
     public Player toPlayerObject(CommandSender cs){
         if(this.isPlayerOnlyCommand()){
             return (Player)cs;

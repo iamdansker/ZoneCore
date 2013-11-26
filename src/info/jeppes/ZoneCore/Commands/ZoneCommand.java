@@ -45,6 +45,7 @@ public interface ZoneCommand extends CommandExecutor{
     public void setIsHelpCommand(boolean isPrimaryCommand, String alias);
     
     public Player toPlayerObject(CommandSender cs);
+    public Player getPlayer(CommandSender cs);
     
     public void sendMessage(CommandSender cs, String message);
     public void sendErrorMessage(CommandSender cs, String message);
