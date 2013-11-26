@@ -4,19 +4,18 @@
  */
 package info.jeppes.ZoneCore;
 
+import info.jeppes.ZoneCore.Exceptions.NotBooleanException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.server.v1_6_R3.NBTTagCompound;
 import net.minecraft.server.v1_6_R3.NBTTagList;
-import net.minecraft.server.v1_6_R3.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -53,7 +52,7 @@ public class ZoneTools {
             case "deny":
                 return false;
         }
-        throw new Exception("Could not find any boolean");
+        throw new NotBooleanException(arg);
     }
     
     public static WorldTime getWorldTime(long time){
