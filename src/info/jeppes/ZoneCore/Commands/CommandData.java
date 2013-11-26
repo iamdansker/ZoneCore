@@ -7,9 +7,12 @@ package info.jeppes.ZoneCore.Commands;
 import info.jeppes.ZoneCore.Exceptions.NotEnoughArguementsException;
 import info.jeppes.ZoneCore.ZoneCore;
 import info.jeppes.ZoneCore.ZonePlugin;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -67,19 +70,30 @@ public abstract class CommandData implements ZoneCommand{
     
     @Override
     public boolean onCommand(CommandSender cs, org.bukkit.command.Command cmnd, String string, String[] args) {
-        try {
-            if(!canRun(cs,args)){
-                logCommand(args, cs, false);
-                noPermissions(cs);
-                return false;
-            } else {
-                logCommand(args, cs, true);
-                run(plugin,cs,cmnd,args);
-                //The command will display it's own error message if needed so it just need to return true
-                return true;
+        try{
+            try {
+                if(!canRun(cs,args)){
+                    logCommand(args, cs, false);
+                    noPermissions(cs);
+                    return false;
+                } else {
+                    logCommand(args, cs, true);
+                    run(plugin,cs,cmnd,args);
+                    //The command will display it's own error message if needed so it just need to return true
+                    return true;
+                }
+            } catch (NotEnoughArguementsException ex) {
+                this.missingArguments(cs);
             }
-        } catch (NotEnoughArguementsException ex) {
-            this.missingArguments(cs);
+        } catch(Exception e){
+            cs.sendMessage(ChatColor.RED+"An error occured while executing command");
+            if(cs.isOp()){
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+                cs.sendMessage(ChatColor.RED+errors.toString());
+            } else {
+                cs.sendMessage(ChatColor.RED+"Please notify an admin and tell exactly what happened");
+            }
         }
         return false;
     }
