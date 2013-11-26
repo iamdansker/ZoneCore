@@ -94,6 +94,8 @@ public abstract class CommandData implements ZoneCommand{
             } else {
                 cs.sendMessage(ChatColor.RED+"Please notify an admin and tell exactly what happened");
             }
+            //for logging
+            e.printStackTrace();
         }
         return false;
     }

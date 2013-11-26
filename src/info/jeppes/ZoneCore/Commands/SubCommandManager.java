@@ -31,31 +31,36 @@ public class SubCommandManager extends Command implements CommandExecutor{
     
     @Override
     public boolean execute(CommandSender cs, String commandName, String[] args) {
-        String[] commandArgs = new String[args.length+1];
-        commandArgs[0] = commandName;
-        System.arraycopy(args, 0, commandArgs, 1, args.length);
-        if(commandArgs.length > 1){
-            ZoneCommand zoneCommand = getCommand(commandArgs[1]);
-            if(zoneCommand != null){
-                zoneCommand.onCommand(cs, this, commandName, commandArgs);
+        try{
+            String[] commandArgs = new String[args.length+1];
+            commandArgs[0] = commandName;
+            System.arraycopy(args, 0, commandArgs, 1, args.length);
+            if(commandArgs.length > 1){
+                ZoneCommand zoneCommand = getCommand(commandArgs[1]);
+                if(zoneCommand != null){
+                    zoneCommand.onCommand(cs, this, commandName, commandArgs);
+                } else {
+                    if(primaryCommand != null){
+                        primaryCommand.onCommand(cs, this, commandName, commandArgs);
+                    } else if(helpCommand != null){
+                        helpCommand.onCommand(cs, this, commandName, commandArgs);
+                    }
+                }
             } else {
+                for(ZoneCommand command : commands){
+                    if(command.getSubAliases() == null){
+                        command.onCommand(cs, this, commandName, commandArgs);
+                    }
+                }
                 if(primaryCommand != null){
                     primaryCommand.onCommand(cs, this, commandName, commandArgs);
                 } else if(helpCommand != null){
                     helpCommand.onCommand(cs, this, commandName, commandArgs);
                 }
             }
-        } else {
-            for(ZoneCommand command : commands){
-                if(command.getSubAliases() == null){
-                    command.onCommand(cs, this, commandName, commandArgs);
-                }
-            }
-            if(primaryCommand != null){
-                primaryCommand.onCommand(cs, this, commandName, commandArgs);
-            } else if(helpCommand != null){
-                helpCommand.onCommand(cs, this, commandName, commandArgs);
-            }
+        } catch(Exception e){
+            e.printStackTrace();
+            return false;
         }
         return false;
     }
