@@ -27,11 +27,14 @@ import org.bukkit.plugin.Plugin;
 /**
  *
  * @author Jeppe
+ * @param <E>
  */
 public class ZoneUserManager<E extends ZoneUser> implements Listener{
     private final HashMap<String,WeakReference<E>> users = new HashMap();
     private final Plugin plugin;
     private final boolean isZonePlugin;
+    //This SoftReference most likely wont work due to ZoneUserData holding a ConfigurationSection object
+    //of the config, need to look into that later.
     private SoftReference<ZoneConfig> usersConfigReference;
     private final String usersConfigFilePath;
     private final int saveInterval = 24000; //ticks
