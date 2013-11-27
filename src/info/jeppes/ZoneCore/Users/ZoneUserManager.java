@@ -8,12 +8,13 @@ import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import info.jeppes.ZoneCore.ZonePlugin;
+import java.io.File;
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,14 +29,16 @@ import org.bukkit.plugin.Plugin;
  * @author Jeppe
  */
 public class ZoneUserManager<E extends ZoneUser> implements Listener{
-    private HashMap<String,WeakReference<E>> users = new HashMap();
+    private final HashMap<String,WeakReference<E>> users = new HashMap();
     private final Plugin plugin;
-    private boolean isZonePlugin;
-    private ZoneConfig usersConfig;
-    private int saveInterval = 24000; //ticks
+    private final boolean isZonePlugin;
+    private SoftReference<ZoneConfig> usersConfigReference;
+    private final String usersConfigFilePath;
+    private final int saveInterval = 24000; //ticks
     
     public ZoneUserManager(Plugin plugin, ZoneConfig usersConfig){
-        this.usersConfig = usersConfig;
+        this.usersConfigReference = new SoftReference(usersConfig);
+        this.usersConfigFilePath = usersConfig.getFile().getPath();
         this.plugin = plugin;
         if(plugin instanceof  ZonePlugin){
             this.isZonePlugin = true;
@@ -122,7 +125,15 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     }
     
     public ZoneConfig getUsersConfig(){
-        return usersConfig;
+        if(usersConfigReference != null){
+            ZoneConfig config = usersConfigReference.get();
+            if(config == null){
+                config = new ZoneConfig(plugin, new File(usersConfigFilePath));
+                usersConfigReference = new SoftReference(config);
+            }
+            return config;
+        }
+        return null;
     }
     
     public void loadUsers(ZoneConfig usersConfig){
@@ -147,7 +158,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         return loadUser(player.getName());
     }
     public E loadUser(String userName){
-        ConfigurationSection config = usersConfig.getConfigurationSection(userName);
+        ConfigurationSection config = getUsersConfig().getConfigurationSection(userName);
         return loadUser(userName,config);
     }
     public E loadUser(Player player, ConfigurationSection config){
