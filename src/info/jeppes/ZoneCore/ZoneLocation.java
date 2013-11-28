@@ -6,6 +6,7 @@ package info.jeppes.ZoneCore;
 
 import info.jeppes.ZoneWorld.ZoneWorld;
 import info.jeppes.ZoneWorld.ZoneWorldAPI;
+import java.math.BigDecimal;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -20,16 +21,21 @@ public class ZoneLocation extends Location {
     private String worldName;
     
     public ZoneLocation(String worldName, double x, double y, double z){
-        super(null,x,y,z);
+        this(worldName,x,y,z,0,0);
+    }
+    public ZoneLocation(String worldName, double x, double y, double z, float pitch, float yaw){
+        super(null,x,y,z,pitch,yaw);
         this.worldName = worldName;
     }
     public ZoneLocation(World world, double x, double y, double z){
-        super(world,x,y,z);
+        this(world,x,y,z,0,0);
+    }
+    public ZoneLocation(World world, double x, double y, double z, float pitch, float yaw){
+        super(world,x,y,z,pitch,yaw);
         this.worldName = world.getName();
     }
     public ZoneLocation(Location location){
-        super(location.getWorld(),location.getX(),location.getY(),location.getZ(),location.getYaw(),location.getPitch());
-        this.worldName = location.getWorld().getName();
+        this(location.getWorld(),location.getX(),location.getY(),location.getZ(),location.getYaw(),location.getPitch());
     }
     
     public String getWorldName(){
@@ -106,6 +112,22 @@ public class ZoneLocation extends Location {
         return toSaveString(this);
     }
     
+    private static double format(double number) {
+        BigDecimal bd = new BigDecimal(number);
+        bd = bd.setScale(2,BigDecimal.ROUND_HALF_UP);
+        return bd.doubleValue();
+    }
+    
+    public static String toRoundedSaveString(Location location){
+        Location clone = location.clone();
+        clone.setX(format(clone.getX()));
+        clone.setY(format(clone.getY()));
+        clone.setZ(format(clone.getZ()));
+        clone.setPitch((float)format(clone.getPitch()));
+        clone.setYaw((float)format(clone.getYaw()));
+        return toSaveString(clone);
+    }
+    
     public static String toSaveString(Location location){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(location.getWorld().getName()).append(":");
@@ -116,6 +138,16 @@ public class ZoneLocation extends Location {
         stringBuilder.append(location.getPitch());
         
         return stringBuilder.toString();
+    }
+    
+    public static String toRoundedSaveString(ZoneLocation location){
+        ZoneLocation clone = location.clone();
+        clone.setX(format(clone.getX()));
+        clone.setY(format(clone.getY()));
+        clone.setZ(format(clone.getZ()));
+        clone.setPitch((float)format(clone.getPitch()));
+        clone.setYaw((float)format(clone.getYaw()));
+        return toSaveString(clone);
     }
     public static String toSaveString(ZoneLocation location){
         StringBuilder stringBuilder = new StringBuilder();
@@ -156,5 +188,16 @@ public class ZoneLocation extends Location {
                 c2 + " Y:"+c3+getBlockY()+
                 c2 + " Z:"+c3+getBlockZ()+
                 c2 + " Direction: "+c3+ZoneTools.yawToDirection(this.getYaw());
+    }
+    
+    @Override
+    public ZoneLocation clone(){
+        ZoneLocation clone;
+        if(super.getWorld() != null){
+            clone = new ZoneLocation(getWorld(),getX(),getY(),getZ(),getPitch(),getYaw());
+        } else {
+            clone = new ZoneLocation(getWorldName(),getX(),getY(),getZ(),getPitch(),getYaw());
+        }
+        return clone;
     }
 }
