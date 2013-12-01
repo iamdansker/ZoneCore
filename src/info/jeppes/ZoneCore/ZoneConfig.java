@@ -57,11 +57,15 @@ public class ZoneConfig extends AsynchronizedYamlConfiguration{
     public String getFileName(){
         return name;
     }
-    
     @Override
     public String getName(){
         return getFileName();
     }
+    
+    public File getFile() {
+        return file;
+    }
+    
     public final boolean loadDefaults(Plugin plugin){
         return this.loadDefaults(plugin, file.getName());
     }
