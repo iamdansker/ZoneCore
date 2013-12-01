@@ -6,10 +6,8 @@ package info.jeppes.ZoneCore.Users;
 
 import info.jeppes.ZoneCore.ZoneConfig;
 import java.util.HashMap;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
