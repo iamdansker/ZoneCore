@@ -2,6 +2,7 @@ package info.jeppes.ZoneCore.TriggerBoxes;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -252,7 +253,7 @@ public class PolygonTriggerBox extends TriggerBox{
         return getPolygonTriggerBox(saveString,null);
     }
     public static PolygonTriggerBox getPolygonTriggerBox(String saveString, TriggerBoxEventHandler eventHandler) throws Exception{
-        String[] split = saveString.split("|");
+        String[] split = saveString.split(Pattern.quote("|"));
         
         if(!"polygon".equals(split[0])){
             throw new Exception("TriggerBox is not a polygon, it is a \""+split[0]+"\"");
