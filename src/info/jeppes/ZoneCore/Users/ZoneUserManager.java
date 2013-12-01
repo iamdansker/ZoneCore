@@ -35,12 +35,12 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     private final boolean isZonePlugin;
     //This SoftReference most likely wont work due to ZoneUserData holding a ConfigurationSection object
     //of the config, need to look into that later.
-    private SoftReference<ZoneConfig> usersConfigReference;
+    private ZoneConfig usersConfigReference;
     private final String usersConfigFilePath;
     private final int saveInterval = 24000; //ticks
     
     public ZoneUserManager(Plugin plugin, ZoneConfig usersConfig){
-        this.usersConfigReference = new SoftReference(usersConfig);
+        this.usersConfigReference = usersConfig;
         this.usersConfigFilePath = usersConfig.getFile().getPath();
         this.plugin = plugin;
         if(plugin instanceof  ZonePlugin){
@@ -128,15 +128,16 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     }
     
     public ZoneConfig getUsersConfig(){
-        if(usersConfigReference != null){
-            ZoneConfig config = usersConfigReference.get();
-            if(config == null){
-                config = new ZoneConfig(plugin, new File(usersConfigFilePath));
-                usersConfigReference = new SoftReference(config);
-            }
-            return config;
-        }
-        return null;
+//        if(usersConfigReference != null){
+//            ZoneConfig config = usersConfigReference.get();
+//            if(config == null){
+//                config = new ZoneConfig(plugin, new File(usersConfigFilePath));
+//                usersConfigReference = new SoftReference(config);
+//            }
+//            return config;
+//        }
+//        return null;
+        return usersConfigReference;
     }
     
     public void loadUsers(ZoneConfig usersConfig){
