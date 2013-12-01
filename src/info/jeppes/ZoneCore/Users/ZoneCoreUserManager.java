@@ -7,7 +7,6 @@ package info.jeppes.ZoneCore.Users;
 import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -18,6 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 /**
  *
  * @author jeppe
+ * @param <E>
  */
 public class ZoneCoreUserManager <E extends ZoneCoreUser> extends ZoneUserManager<E> implements Listener{
     public ZoneCoreUserManager(ZoneConfig usersConfig) {
