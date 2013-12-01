@@ -138,7 +138,6 @@ public class RoundTriggerBox extends TriggerBox{
         if(!"circle".equals(split[0])){
             throw new Exception("TriggerBox is not a circle, it is a \""+split[0]+"\"");
         }
-        
         //Base triggerbox parameters
         String[] baseTriggerBoxString = split[1].split(",");
         String name = baseTriggerBoxString[0];
