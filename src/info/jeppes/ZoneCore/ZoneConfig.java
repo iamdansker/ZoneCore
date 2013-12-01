@@ -28,6 +28,9 @@ public class ZoneConfig extends AsynchronizedYamlConfiguration{
     }
     public ZoneConfig(Plugin plugin, File file, boolean loadDefaults){
         this.plugin = plugin;
+        if(file == null){
+            throw new RuntimeException("file config is null!");
+        }
         this.file = file;
         this.name = file.getName();
         if(!file.exists()){
@@ -94,6 +97,7 @@ public class ZoneConfig extends AsynchronizedYamlConfiguration{
     public static void writeYML(YamlConfiguration config, File configFile, String root, Object x){
         config.set(root, x);
         try {
+            System.out.println(configFile);
             config.save(configFile);
         } catch (IOException ex) {
             Logger.getLogger(ZoneConfig.class.getName()).log(Level.SEVERE, null, ex);

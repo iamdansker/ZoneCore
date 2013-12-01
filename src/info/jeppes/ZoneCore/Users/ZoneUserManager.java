@@ -147,9 +147,9 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         return loadUser(player.getName());
     }
     public E loadUser(String userName){
-        ConfigurationSection config = usersConfig.getConfigurationSection(userName);
+        ConfigurationSection config = getUsersConfig().getConfigurationSection(userName);
         if(config == null){
-            usersConfig.createSection(userName);
+            config = getUsersConfig().createSection(userName);
         }
         return loadUser(userName,config);
     }
