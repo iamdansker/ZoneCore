@@ -99,6 +99,7 @@ public class ZoneCommandManager {
         if(config.contains("injectCommands")){
             injectCommands = config.getBoolean("injectCommands");
         }
+        boolean succesfullyInjected = false;
         if(injectCommands){
             CommandMap commandMap = null;
 
@@ -107,13 +108,15 @@ public class ZoneCommandManager {
                    final Field f = SimplePluginManager.class.getDeclaredField("commandMap");
                    f.setAccessible(true);
                    commandMap = (CommandMap) f.get(Bukkit.getPluginManager());
+                   commandMap.register(alias, command);
+                   succesfullyInjected = true;
                } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
                    Logger.getLogger(ZoneCommandManager.class.getName()).log(Level.SEVERE, null, ex);
                    return false;
                }
             }
-            commandMap.register(alias, command);
-        } else { 
+        }
+        if(!succesfullyInjected){
             commandFromBukkit.setExecutor(command);
         }
          return true;
