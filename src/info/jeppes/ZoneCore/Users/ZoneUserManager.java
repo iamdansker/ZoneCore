@@ -8,8 +8,6 @@ import info.jeppes.ZoneCore.Events.NewZoneUserEvent;
 import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import info.jeppes.ZoneCore.ZonePlugin;
-import java.io.File;
-import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Set;
@@ -31,6 +29,8 @@ import org.bukkit.plugin.Plugin;
  */
 public class ZoneUserManager<E extends ZoneUser> implements Listener{
     private final HashMap<String,WeakReference<E>> users = new HashMap();
+    //Really messy fix for a problem...
+    private final HashMap<String,String> userNames = new HashMap();
     private final Plugin plugin;
     private final boolean isZonePlugin;
     //This SoftReference most likely wont work due to ZoneUserData holding a ConfigurationSection object
@@ -76,7 +76,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
             if(reference != null){
                 E user = reference.get();
                 if(user == null){
-                    user = this.loadUser(userName);
+                    user = this.loadUser(userNames.get(key));
                     reference = new WeakReference(user);
                     getUsers().put(key, reference);
                 }
@@ -111,17 +111,21 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
             newUser = loadUser(playerName, getUsersConfig().createSection(playerName));
         }
         if(addToUserList){
-            addUserToUserList(newUser);
+            addUserToUserList(newUser,true);
         }
         return newUser;
     }
-    public boolean addUserToUserList(E user){
+    public boolean addUserToUserList(E user, boolean isNew){
         if(!containsPlayer(user.getName())){
-            getUsers().put(user.getName().toLowerCase(), new WeakReference(user));
-            getUsersConfig().schedualSave();
+            String key = user.getName().toLowerCase();
+            getUsers().put(key, new WeakReference(user));
+            userNames.put(key, user.getName());
+            if(isNew){
+                getUsersConfig().schedualSave();
 
-            NewZoneUserEvent newZoneUserEvent = new NewZoneUserEvent(this,user);
-            Bukkit.getPluginManager().callEvent(newZoneUserEvent);
+                NewZoneUserEvent newZoneUserEvent = new NewZoneUserEvent(this,user);
+                Bukkit.getPluginManager().callEvent(newZoneUserEvent);
+            }
             return true;
         }
         return false;
@@ -149,7 +153,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         Set<String> keys = usersConfig.getKeys(false);
         for(String userName : keys){
             E user = loadUser(userName);
-            getUsers().put(userName.toLowerCase(), new WeakReference(user));
+            this.addUserToUserList(user, false);
         }
         
         if(isZonePlugin){
@@ -176,7 +180,7 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     }
     
     public boolean checkNewUser(Player player) {
-        if(!getUsers().containsKey(player.getName().toLowerCase())){
+        if(!containsPlayer(player.getName().toLowerCase())){
             E newUser = createNewZoneUser(player, true);
             return true;
         }
