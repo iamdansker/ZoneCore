@@ -51,7 +51,6 @@ public abstract class ZoneInventory implements ZoneInventoryInterface, Listener{
                         public void run() {
                             player.setItemInHand(player.getItemInHand());
                             player.updateInventory();
-                            System.out.println("test (ZoneInventory.class)");
                         }
                     },1);
                 }
