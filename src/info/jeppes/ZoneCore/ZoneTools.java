@@ -312,7 +312,7 @@ public class ZoneTools {
     }
     
     public static ItemStack addGlow(org.bukkit.inventory.ItemStack stack) {
-        net.minecraft.server.v1_6_R3.ItemStack nmsStack = (net.minecraft.server.v1_6_R3.ItemStack) CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_7_R1.ItemStack nmsStack = (net.minecraft.server.v1_7_R1.ItemStack) CraftItemStack.asNMSCopy(stack);
         NBTTagCompound compound = nmsStack.tag;
         
         // Initialize the compound if we need to
