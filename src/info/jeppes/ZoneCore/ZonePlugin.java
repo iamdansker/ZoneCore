@@ -8,10 +8,13 @@ import info.jeppes.ZoneCore.Commands.DefaultCommand;
 import info.jeppes.ZoneCore.Commands.ZoneCommand;
 import info.jeppes.ZoneCore.Commands.ZoneCommandManager;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +25,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -180,20 +187,183 @@ public abstract class ZonePlugin extends JavaPlugin{
             @Override
             public void run() {
                 sendMessage(cs,"Reloading "+getName()+" Version "+getDescription().getVersion()+"...");
-                PluginManager pluginManager = getServer().getPluginManager();
-                pluginManager.disablePlugin(instance);
-                pluginManager.enablePlugin(instance);
-//                try {
-//                    Plugin loadPlugin = pluginManager.loadPlugin(file);
-//                    loadPlugin.onLoad();
-//                    pluginManager.enablePlugin(loadPlugin);
-//                } catch (InvalidPluginException | InvalidDescriptionException | UnknownDependencyException ex) {
-//                    Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, ex);
-//                    pluginManager.enablePlugin(instance);
-//                }
+                try {
+                    //Experimental
+                    reloadPlugin(getName(), true, cs);
+                } catch (Exception ex) {
+                    sendMessage(cs,"Could not reload plugin!");
+                    cs.sendMessage(ex.getMessage());
+                    ex.printStackTrace();
+                    return;
+                }
+                
+//                PluginManager pluginManager = getServer().getPluginManager();
+//                pluginManager.disablePlugin(instance);
+//                pluginManager.enablePlugin(instance);
+////                try {
+////                    Plugin loadPlugin = pluginManager.loadPlugin(file);
+////                    loadPlugin.onLoad();
+////                    pluginManager.enablePlugin(loadPlugin);
+////                } catch (InvalidPluginException | InvalidDescriptionException | UnknownDependencyException ex) {
+////                    Logger.getLogger(ZonePlugin.class.getName()).log(Level.SEVERE, null, ex);
+////                    pluginManager.enablePlugin(instance);
+////                }
                 sendMessage(cs,"Reloaded "+getName()+" Version "+getDescription().getVersion()+"!");
             }
         });
+    } 
+    public static void log(String s, String type) {
+        String message = "[PluginReloader] " + s;
+        String t = type.toLowerCase();
+        if (t != null) {
+            boolean info = t.equals("info");
+            boolean warning = t.equals("warning");
+            boolean severe = t.equals("severe");
+            if (info) {
+                Bukkit.getLogger().info(message);
+            } else if (warning) {
+                Bukkit.getLogger().warning(message);
+            } else if (severe) {
+                Bukkit.getLogger().severe(message);
+            } else {
+                Bukkit.getLogger().info(message);
+            }
+        }
+    }
+
+    private void send(String message, CommandSender sender) {
+        if (sender == null) {
+            log(message, "info");
+        } else {
+            sender.sendMessage(ChatColor.GOLD + message);
+        }
+    }
+    private boolean unloadPlugin(String pluginName, boolean errorHandling, CommandSender sender) throws Exception {
+        PluginManager manager = getServer().getPluginManager();
+        SimplePluginManager spmanager = (SimplePluginManager) manager;
+
+        if (spmanager != null) {
+            Field pluginsField = spmanager.getClass().getDeclaredField("plugins");
+            pluginsField.setAccessible(true);
+            List plugins = (List) pluginsField.get(spmanager);
+
+            Field lookupNamesField = spmanager.getClass().getDeclaredField("lookupNames");
+            lookupNamesField.setAccessible(true);
+            Map lookupNames = (Map) lookupNamesField.get(spmanager);
+
+            Field commandMapField = spmanager.getClass().getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            SimpleCommandMap commandMap = (SimpleCommandMap) commandMapField.get(spmanager);
+
+            Field knownCommandsField = null;
+            Map knownCommands = null;
+
+            if (commandMap != null) {
+                knownCommandsField = commandMap.getClass().getDeclaredField("knownCommands");
+                knownCommandsField.setAccessible(true);
+                knownCommands = (Map) knownCommandsField.get(commandMap);
+            }
+            for (Plugin plugin : manager.getPlugins()) {
+                if (plugin.getDescription().getName().equalsIgnoreCase(pluginName)) {
+                    manager.disablePlugin(plugin);
+
+                    if ((plugins != null) && (plugins.contains(plugin))) {
+                        plugins.remove(plugin);
+                    }
+
+                    if ((lookupNames != null) && (lookupNames.containsKey(pluginName))) {
+                        lookupNames.remove(pluginName);
+                    }
+
+                    if (commandMap != null) {
+                        for (Iterator it = knownCommands.entrySet().iterator(); it.hasNext();) {
+                            Map.Entry entry = (Map.Entry) it.next();
+
+                            if ((entry.getValue() instanceof PluginCommand)) {
+                                PluginCommand command = (PluginCommand) entry.getValue();
+
+                                if (command.getPlugin() == plugin) {
+                                    command.unregister(commandMap);
+                                    it.remove();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if (errorHandling) {
+                send(pluginName + " is already unloaded.", sender);
+            }
+            return true;
+        }
+
+        if (((sender instanceof Player)) && (!errorHandling)) {
+            log(sender.getName() + " has unloaded " + pluginName + ".", "info");
+        }
+
+        if (errorHandling) {
+            send("Unloaded " + pluginName + " successfully!", sender);
+        }
+
+        return true;
+    }
+
+    private boolean loadPlugin(String pluginName, boolean errorHandling, CommandSender sender) {
+        try {
+            PluginManager manager = getServer().getPluginManager();
+            Plugin plugin = manager.loadPlugin(new File("plugins", pluginName + ".jar"));
+
+            if (plugin == null) {
+                if (errorHandling) {
+                    send("Error loading " + pluginName + ", no plugin with that name was found.", sender);
+                }
+                return false;
+            }
+
+            plugin.onLoad();
+            manager.enablePlugin(plugin);
+        } catch (Exception e) {
+            if (errorHandling) {
+                send("Error loading " + pluginName + ", this plugin must be reloaded by restarting the server.", sender);
+            }
+
+            return false;
+        }
+
+        if (((sender instanceof Player)) && (!errorHandling)) {
+            log(sender.getName() + " has loaded " + pluginName + ".", "info");
+        }
+
+        if (errorHandling) {
+            send("Loaded " + pluginName + " successfully!", sender);
+        }
+
+        return true;
+    }
+
+    private boolean reloadPlugin(String pluginName, boolean errorHandling, CommandSender sender)
+            throws Exception {
+        boolean unload = unloadPlugin(pluginName, false, sender);
+        boolean load = loadPlugin(pluginName, false, sender);
+
+        if ((sender instanceof Player)) {
+            log(sender.getName() + " reloaded " + pluginName + ".", "info");
+        }
+
+        if ((unload) && (load)) {
+            if (errorHandling) {
+                send("Reloaded " + pluginName + " successfully!", sender);
+            }
+        } else {
+            if (errorHandling) {
+                send("Error reloading " + pluginName + ".", sender);
+            }
+
+            return false;
+        }
+
+        return true;
     }
     
     public ZoneCore getZoneCore(){
