@@ -8,6 +8,7 @@ import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -105,10 +106,10 @@ public class ZoneUserData extends BukkitPlayerWrapper{
         }
         return false;
     }
-
+    
     @Override
     public boolean giveItemsWhenOnline() {
-        if(isOnline() && config.contains("onjoin.giveitems")){
+        if(isOnline() && getConfig().contains("onjoin.giveitems")){
             ConfigurationSection configurationSection = getConfig().getConfigurationSection("onjoin.giveitems");
             if(configurationSection == null){
                 return true;
@@ -138,6 +139,17 @@ public class ZoneUserData extends BukkitPlayerWrapper{
             return true;
         }
         return false;
+    }
+    
+    public List<String> getPendingMessages(){
+        return (ArrayList<String>) getConfig().getList("onjoin.sendmessage");
+    }
+    
+    public boolean removePendingMessage(String message){
+        List<String> pendingMessages = getPendingMessages();
+        boolean remove = pendingMessages.remove(message);
+        setAndSave("onjoin.sendmessage", pendingMessages);
+        return remove;
     }
     
     @Override
