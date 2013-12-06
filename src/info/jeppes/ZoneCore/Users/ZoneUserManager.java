@@ -9,7 +9,9 @@ import info.jeppes.ZoneCore.ZoneConfig;
 import info.jeppes.ZoneCore.ZoneCore;
 import info.jeppes.ZoneCore.ZonePlugin;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
@@ -38,6 +40,9 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     private ZoneConfig usersConfigReference;
     private final String usersConfigFilePath;
     private final int saveInterval = 24000; //ticks
+    //Keep user objects of online players from getting GC'ed
+    private boolean preventOnlineUserGC = true;
+    private ArrayList<E> preventGCUsers = new ArrayList();
     
     public ZoneUserManager(Plugin plugin, ZoneConfig usersConfig){
         this.usersConfigReference = usersConfig;
@@ -50,6 +55,12 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         }
         
         loadUsers(usersConfig);
+        
+        if(preventOnlineUserGC){
+            for(Player player : Bukkit.getOnlinePlayers()){
+                holdUserFromGC(getUser(player));
+            }
+        }
         
         Bukkit.getPluginManager().registerEvents(this, plugin);
         
@@ -131,6 +142,17 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
         return false;
     }
     
+    
+    public List<E> getHoldingUsersFromGC(){
+        return preventGCUsers;
+    }
+    public void holdUserFromGC(E user){
+        getHoldingUsersFromGC().add(user);
+    }
+    public boolean releaseUserForGC(E user){
+        return getHoldingUsersFromGC().remove(user);
+    }
+    
     public ZoneConfig getUsersConfig(){
 //        if(usersConfigReference != null){
 //            ZoneConfig config = usersConfigReference.get();
@@ -190,8 +212,9 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event){
         checkNewUser(event.getPlayer());
-        final ZoneUser user = getUser(event.getPlayer());
+        final E user = getUser(event.getPlayer());
         user.setPlayer(event.getPlayer());
+        this.holdUserFromGC(user);
         
         Bukkit.getScheduler().runTaskLater(ZoneCore.getCorePlugin(), new Runnable(){
             @Override
@@ -205,9 +228,10 @@ public class ZoneUserManager<E extends ZoneUser> implements Listener{
     
     @EventHandler(priority=EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event){
-        ZoneUser user = getUser(event.getPlayer());
+        E user = getUser(event.getPlayer());
         if(user != null){
             user.saveConfig();
         }
+        this.releaseUserForGC(user);
     }
 }
